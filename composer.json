@@ -8,5 +8,23 @@
             "email": "geoff@garbers.co.za"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "Garbetjie\\Http\\RequestLogging\\": "src"
+        },
+        "files": ["functions.php"]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Garbetjie\\Http\\RequestLogging\\RequestLoggingServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "psr/http-message": "^1.0",
+        "psr/log": "^1.1",
+        "php": ">=7.2",
+        "psr/http-server-middleware": "^1.0"
+    }
 }
