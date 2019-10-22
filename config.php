@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'level' => env('REQUEST_LOGGING_LEVEL', 100),
+    'level' => env('REQUEST_LOGGING_LEVEL', 'debug'),
 
     'requests' => [
         'enabled' => env('REQUEST_LOGGING_ENABLED_REQUESTS', true),

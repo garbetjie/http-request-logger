@@ -22,6 +22,11 @@ class RequestLoggingMiddleware implements MiddlewareInterface
     private $logger;
 
     /**
+     * @var string
+     */
+    private $level;
+
+    /**
      * @var RequestContextExtractor
      */
     private $requestExtractor;
@@ -31,9 +36,10 @@ class RequestLoggingMiddleware implements MiddlewareInterface
      */
     private $responseExtractor;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, string $level)
     {
         $this->logger = $logger;
+        $this->level = $level;
         $this->requestExtractor = new RequestContextExtractor();
         $this->responseExtractor = new ResponseContextExtractor();
     }
@@ -103,14 +109,14 @@ class RequestLoggingMiddleware implements MiddlewareInterface
         }
 
         $context = $this->requestExtractor->extract($request);
-        $this->logger->log('debug', 'http request ' . $verbs[0], ['id' => $id] + $context);
+        $this->logger->log($this->level, 'http request ' . $verbs[0], ['id' => $id] + $context);
 
         $started = microtime(true);
         $response = $handler($request);
         $duration = microtime(true) - $started;
 
         $context = $this->responseExtractor->extract($response);
-        $this->logger->log('debug', 'http response ' . $verbs[1], ['id' => $id, 'duration' => $duration] + $context);
+        $this->logger->log($this->level, 'http response ' . $verbs[1], ['id' => $id, 'duration' => $duration] + $context);
 
         return $response;
     }

@@ -17,6 +17,15 @@ class RequestLoggingServiceProvider extends ServiceProvider
 
         $this->registerGuzzleClient();
         $this->registerGuzzleClientInterface();
+        $this->registerMiddleware();
+    }
+
+    protected function registerMiddleware()
+    {
+        $this->app
+            ->when(RequestLoggingMiddleware::class)
+            ->needs('$level')
+            ->give(config('garbetjie-http-request-logging.level'));
     }
 
     protected function registerGuzzleClientInterface()
