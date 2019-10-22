@@ -19,18 +19,18 @@ class RequestLoggingServiceProvider extends ServiceProvider
         $this->registerGuzzleClientInterface();
     }
 
-    protected function registerGuzzleClient()
+    protected function registerGuzzleClientInterface()
     {
-        $this->app->alias(ClientInterface::class, Client::class);
+        $this->app->alias(Client::class, ClientInterface::class);
     }
 
-    protected function registerGuzzleClientInterface()
+    protected function registerGuzzleClient()
     {
         $this->app->extend(
             Client::class,
             function (Client $client, Container $container) {
-                $middleware = $container->make(Middleware::class);
-                /* @var Middleware $middleware */
+                $middleware = $container->make(RequestLoggingMiddleware::class);
+                /* @var RequestLoggingMiddleware $middleware */
 
                 $handler = $client->getConfig('handler');
                 /* @var HandlerStack $handler */

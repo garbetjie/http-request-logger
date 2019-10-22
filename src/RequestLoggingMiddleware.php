@@ -3,8 +3,6 @@
 namespace Garbetjie\Http\RequestLogging;
 
 use Closure;
-use Garbetjie\LaravelRequestLogger\RequestContextExtractor;
-use Garbetjie\LaravelRequestLogger\ResponseContextExtractor;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Psr\Http\Message\RequestInterface;
@@ -14,10 +12,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use function array_reverse;
-use function Garbetjie\LaravelRequestLogger\generate_id;
 use function microtime;
 
-class Middleware implements MiddlewareInterface
+class RequestLoggingMiddleware implements MiddlewareInterface
 {
     /**
      * @var LoggerInterface
@@ -106,14 +103,14 @@ class Middleware implements MiddlewareInterface
         }
 
         $context = $this->requestExtractor->extract($request);
-        $this->logger->log(100, 'http request ' . $verbs[0], ['id' => $id] + $context);
+        $this->logger->log('debug', 'http request ' . $verbs[0], ['id' => $id] + $context);
 
         $started = microtime(true);
         $response = $handler($request);
         $duration = microtime(true) - $started;
 
         $context = $this->responseExtractor->extract($response);
-        $this->logger->log(100, 'http response ' . $verbs[1], ['id' => $id, 'duration' => $duration] + $context);
+        $this->logger->log('debug', 'http response ' . $verbs[1], ['id' => $id, 'duration' => $duration] + $context);
 
         return $response;
     }

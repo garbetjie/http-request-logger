@@ -2,7 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Request;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;

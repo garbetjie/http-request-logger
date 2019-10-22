@@ -1,5 +1,5 @@
 {
-    "name": "garbetjie/laravel-request-logger",
+    "name": "garbetjie/http-request-logger",
     "description": "A request logger that can log all incoming & outgoing requests and responses.",
     "license": "MIT",
     "authors": [

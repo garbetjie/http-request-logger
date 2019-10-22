@@ -2,7 +2,8 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Illuminate\Http\Response;
+use GuzzleHttp\Promise\PromiseInterface;
+use Symfony\Component\HttpFoundation\Response;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use function base64_encode;
@@ -34,6 +35,9 @@ class ResponseContextExtractor
             case $response instanceof Response:
                 return $this->extractResponseLaravel($response);
 
+            case $response instanceof PromiseInterface:
+                return $this->extractResponsePromise($response);
+
             default:
                 throw new InvalidArgumentException(sprintf('Unknown response instance "%s" provided.', get_class($response)));
         }
@@ -54,6 +58,17 @@ class ResponseContextExtractor
             'body' => base64_encode($body->read($this->maxBodyLength)),
             'headers' => normalize_headers($response->getHeaders()),
         ];
+    }
+
+    /**
+     * @param PromiseInterface $promise
+     * @return array
+     */
+    private function extractResponsePromise($promise)
+    {
+        $response = $promise->wait(true);
+
+        return $this->extractResponsePSR($response);
     }
 
     /**
