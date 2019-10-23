@@ -2,6 +2,7 @@
     "name": "garbetjie/http-request-logger",
     "description": "A request logger that can log all incoming & outgoing requests and responses.",
     "license": "MIT",
+    "keywords": ["http", "request", "logging", "psr", "guzzle", "laravel"],
     "authors": [
         {
             "name": "Geoff Garbers",
@@ -26,5 +27,9 @@
         "psr/log": "^1.1",
         "php": ">=7.2",
         "psr/http-server-middleware": "^1.0"
+    },
+    "suggest": {
+        "ext-soap": "Required for logging SOAP requests.",
+        "ext-simplexml": "Required for logging SOAP requests."
     }
 }
