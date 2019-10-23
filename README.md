@@ -14,6 +14,7 @@ as well as incoming requests using the bundled PSR-compliant middleware that als
     * [In Laravel](#laravel)
     * [PSR-15 compliant frameworks](#psr-15)
 * [Log outgoing requests](#log-outgoing-requests)
+* [Log SOAP requests](#log-soap-requests)
 
 ## Installation
 
@@ -84,4 +85,20 @@ If you're making use of Guzzle anywhere else, it is still easy to use this middl
 $stack = GuzzleHttp\HandlerStack::create();
 $stack->push(new Garbetjie\Http\RequestLogging\RequestLoggingMiddleware($logger, 'debug'), 'logging');
 $client = new GuzzleHttp\Client(['stack' => $stack]);
+```
+
+
+## Log SOAP requests
+
+Logging outgoing SOAP requests is a simple task. Simply create an instance of `Garbetjie\Http\RequestLogging\SoapClient`,
+and use it as you would the normal SOAP client:
+
+```php
+<?php
+
+/* @var Psr\Log\LoggerInterface $logger */
+/* @var GuzzleHttp\Client $client */
+
+$soapClient = new Garbetjie\Http\RequestLogging\SoapClient($client, 'Path to WSDL');
+$soapResponse = $soapClient->ExecuteSoapMethodCall([]);
 ```
