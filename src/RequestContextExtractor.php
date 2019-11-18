@@ -54,7 +54,7 @@ class RequestContextExtractor implements ContextExtractorInterface
             'method' => $request->getMethod(),
             'url' => (string)$request->getUri(),
             'body_length' => $body->getSize(),
-            'body' => $body->read($this->maxBodyLength),
+            'body' => base64_encode($body->read($this->maxBodyLength)),
             'headers' => normalize_headers($request->getHeaders()),
         ];
     }
