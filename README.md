@@ -194,6 +194,9 @@ $middleware->setResponseContextExtractor(new EmptyContextExtractor());
 
 ## Changelog
 
+* **1.2.1**
+    * Add missing Base64-encoding of request body.
+    
 * **1.2.0**
     * Convert context extractors to use a shared interface.
     * Reduce required PHP version to 7.0, instead of 7.2.
