@@ -7,13 +7,11 @@ use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function base64_encode;
-use function bin2hex;
 use function get_class;
-use function random_bytes;
 use function strlen;
 use function substr;
 
-class RequestContextExtractor
+class RequestContextExtractor implements ContextExtractorInterface
 {
     private $maxBodyLength;
 
@@ -23,12 +21,12 @@ class RequestContextExtractor
     }
 
     /**
-     * @param RequestInterface|ServerRequestInterface|Request $request
+     * @param RequestInterface|Request $request
      * @throws InvalidArgumentException
      *
      * @return array
      */
-    public function extract($request)
+    public function extract($request): array
     {
         switch (true) {
             case $request instanceof Request:
@@ -44,7 +42,7 @@ class RequestContextExtractor
     }
 
     /**
-     * @param RequestInterface|ServerRequestInterface $request
+     * @param RequestInterface $request
      * @return array
      */
     private function extractRequestPSR($request)

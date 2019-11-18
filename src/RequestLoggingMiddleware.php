@@ -45,6 +45,26 @@ class RequestLoggingMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Set the extractor that will be used to extract context from the request.
+     *
+     * @param ContextExtractorInterface $extractor
+     */
+    public function setRequestContextExtractor(ContextExtractorInterface $extractor)
+    {
+        $this->requestExtractor = $extractor;
+    }
+
+    /**
+     * Set the extractor that will be used to extract context from the response.
+     *
+     * @param ContextExtractorInterface $extractor
+     */
+    public function setResponseContextExtractor(ContextExtractorInterface $extractor)
+    {
+        $this->responseExtractor = $extractor;
+    }
+
+    /**
      * Laravel middleware handler.
      *
      * @param Request $request
