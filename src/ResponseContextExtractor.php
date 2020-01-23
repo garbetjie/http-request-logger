@@ -3,7 +3,7 @@
 namespace Garbetjie\Http\RequestLogging;
 
 use GuzzleHttp\Promise\PromiseInterface;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use function base64_encode;

@@ -194,6 +194,9 @@ $middleware->setResponseContextExtractor(new EmptyContextExtractor());
 
 ## Changelog
 
+* **1.2.3**
+    * Reference base Symfony response for ResponseContextExtractor.
+
 * **1.2.2**
     * Fix bug causing request and response bodies to not be rewound.
 
