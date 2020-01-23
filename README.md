@@ -194,6 +194,9 @@ $middleware->setResponseContextExtractor(new EmptyContextExtractor());
 
 ## Changelog
 
+* **1.2.2**
+    * Fix bug causing request and response bodies to not be rewound.
+
 * **1.2.1**
     * Add missing Base64-encoding of request body.
     

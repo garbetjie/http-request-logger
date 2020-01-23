@@ -52,11 +52,13 @@ class ResponseContextExtractor implements ContextExtractorInterface
     {
         $body = $response->getBody();
         $body->rewind();
+        $contents = base64_encode($body->read($this->maxBodyLength));
+        $body->rewind();
 
         return [
             'status_code' => $response->getStatusCode(),
             'body_length' => $body->getSize(),
-            'body' => base64_encode($body->read($this->maxBodyLength)),
+            'body' => $contents,
             'headers' => normalize_headers($response->getHeaders()),
         ];
     }
@@ -73,7 +75,7 @@ class ResponseContextExtractor implements ContextExtractorInterface
     }
 
     /**
-     * @param Response $response
+     * @param \Illuminate\Http\Response $response
      * @return array
      */
     private function extractResponseLaravel($response)
