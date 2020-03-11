@@ -2,6 +2,8 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
+use Garbetjie\Http\RequestLogging\Middleware\GuzzleMiddleware;
+use Garbetjie\Http\RequestLogging\Middleware\LaravelMiddleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
@@ -10,7 +12,7 @@ use Illuminate\Support\ServiceProvider;
 use function config;
 use function config_path;
 
-class RequestLoggingServiceProvider extends ServiceProvider
+class LaravelServiceProvider extends ServiceProvider
 {
     public function register()
     {
@@ -28,7 +30,7 @@ class RequestLoggingServiceProvider extends ServiceProvider
     protected function registerMiddleware()
     {
         $this->app
-            ->when(RequestLoggingMiddleware::class)
+            ->when(LaravelMiddleware::class)
             ->needs('$level')
             ->give(config('garbetjie-http-request-logging.level'));
     }
@@ -43,13 +45,16 @@ class RequestLoggingServiceProvider extends ServiceProvider
         $this->app->extend(
             Client::class,
             function (Client $client, Container $container) {
-                $middleware = $container->make(RequestLoggingMiddleware::class);
-                /* @var RequestLoggingMiddleware $middleware */
+                $middleware = $container->make(GuzzleMiddleware::class);
+                /* @var GuzzleMiddleware $middleware */
 
                 $handler = $client->getConfig('handler');
                 /* @var HandlerStack $handler */
 
-                $handler->push($middleware, 'logging');
+                // Replace the HTTP request logging middleware on the handler stack. We remove it first, so that it isn't
+                // accidentally added multiple times.
+                $handler->remove('garbetjie-http-request-logging');
+                $handler->push($middleware, 'garbetjie-http-request-logging');
 
                 return new Client(['handler' => $handler] + $client->getConfig());
             }

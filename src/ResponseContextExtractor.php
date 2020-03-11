@@ -3,6 +3,8 @@
 namespace Garbetjie\Http\RequestLogging;
 
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Http\Message\RequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +14,7 @@ use function sprintf;
 use function strlen;
 use function substr;
 
-class ResponseContextExtractor implements ContextExtractorInterface
+class ResponseContextExtractor
 {
     private $maxBodyLength;
 
@@ -27,7 +29,7 @@ class ResponseContextExtractor implements ContextExtractorInterface
      *
      * @return array
      */
-    public function extract($response): array
+    public function __invoke($response): array
     {
         switch (true) {
             case $response instanceof ResponseInterface:
@@ -75,15 +77,15 @@ class ResponseContextExtractor implements ContextExtractorInterface
     }
 
     /**
-     * @param \Illuminate\Http\Response $response
+     * @param Response $response
      * @return array
      */
     private function extractResponseLaravel($response)
     {
-        $body = $response->content();
+        $body = $response->getContent();
 
         return [
-            'status_code' => $response->status(),
+            'status_code' => $response->getStatusCode(),
             'body_length' => strlen($body),
             'body' => base64_encode(substr($body, 0, $this->maxBodyLength)),
             'headers' => normalize_headers($response->headers->all()),

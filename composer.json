@@ -15,21 +15,31 @@
         },
         "files": ["functions.php"]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Garbetjie\\Http\\RequestLogging\\Tests\\": "tests"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
-                "Garbetjie\\Http\\RequestLogging\\RequestLoggingServiceProvider"
+                "Garbetjie\\Http\\RequestLogging\\LaravelServiceProvider"
             ]
         }
     },
     "require": {
         "psr/http-message": "^1.0",
         "psr/log": "^1.1",
-        "php": ">=7",
+        "php": ">=7.1",
         "psr/http-server-middleware": "^1.0"
     },
     "suggest": {
         "ext-soap": "Required for logging SOAP requests.",
         "ext-simplexml": "Required for logging SOAP requests."
+    },
+    "require-dev": {
+        "laravel/framework": "6.0",
+        "guzzlehttp/guzzle": "*",
+        "phpunit/phpunit": "^9.0"
     }
 }

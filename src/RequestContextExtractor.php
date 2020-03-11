@@ -11,7 +11,7 @@ use function get_class;
 use function strlen;
 use function substr;
 
-class RequestContextExtractor implements ContextExtractorInterface
+class RequestContextExtractor
 {
     private $maxBodyLength;
 
@@ -26,7 +26,7 @@ class RequestContextExtractor implements ContextExtractorInterface
      *
      * @return array
      */
-    public function extract($request): array
+    public function __invoke($request): array
     {
         switch (true) {
             case $request instanceof Request:
