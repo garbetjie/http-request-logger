@@ -143,8 +143,8 @@ abstract class Middleware
     {
         $id = generate_id();
 
-        if (call_user_func($this->requestDecider, $request)) {
-            $context = call_user_func($this->requestExtractor, $request);
+        if (call_user_func($this->requestDecider, $request, $direction)) {
+            $context = call_user_func($this->requestExtractor, $request, $direction);
             $this->logger->log($this->level, $this->messages["{$direction}.request"], ['id' => $id] + $context);
         }
 
@@ -152,8 +152,8 @@ abstract class Middleware
         $response = $handler($request);
         $duration = microtime(true) - $started;
 
-        if (call_user_func($this->responseDecider, $response, $request)) {
-            $context = call_user_func($this->responseExtractor, $response, $request);
+        if (call_user_func($this->responseDecider, $response, $request, $direction === 'in' ? 'out' : 'in')) {
+            $context = call_user_func($this->responseExtractor, $response, $request, $direction === 'in' ? 'out' : 'in');
             $this->logger->log($this->level, $this->messages["{$direction}.response"], ['id' => $id, 'duration' => $duration] + $context);
         }
 

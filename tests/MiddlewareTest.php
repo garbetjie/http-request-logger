@@ -283,20 +283,26 @@ class MiddlewareTest extends TestCase
      * @param string $testMethod
      * @param bool $requestsEnabled
      * @param bool $responsesEnabled
+     * @param string $requestDirection
+     * @param string $responseDirection
      */
-    public function testDisablingLogging($method, $expectedCount, $testMethod, $requestsEnabled, $responsesEnabled)
+    public function testDisablingLogging($method, $expectedCount, $testMethod, $requestsEnabled, $responsesEnabled, $requestDirection, $responseDirection)
     {
         $handler = new ArrayMonologHandler();
 
         $logger = new Logger('test');
         $logger->pushHandler($handler);
 
-        $this->$method($logger, $handler, function(Middleware $middleware) use ($requestsEnabled, $responsesEnabled) {
+        $this->$method($logger, $handler, function(Middleware $middleware) use ($requestsEnabled, $responsesEnabled, $requestDirection, $responseDirection) {
             $middleware->withDeciders(
-                function() use ($requestsEnabled) {
+                function($request, $direction) use ($requestsEnabled, $requestDirection) {
+                    $this->assertEquals($requestDirection, $direction);
+
                     return $requestsEnabled;
                 },
-                function() use ($responsesEnabled) {
+                function($response, $request, $direction) use ($responsesEnabled, $responseDirection) {
+                    $this->assertEquals($responseDirection, $direction);
+
                     return $responsesEnabled;
                 }
             );
@@ -308,53 +314,59 @@ class MiddlewareTest extends TestCase
     public function providerForDisableLoggingTests()
     {
         return [
-            ['createGuzzleExecutor', 0, 'assertCount', false, false],
-            ['createGuzzleExecutor', 1, 'assertCount', true, false],
-            ['createGuzzleExecutor', 1, 'assertCount', false, true],
-            ['createGuzzleExecutor', 1, 'assertNotCount', true, true],
-            ['createGuzzleExecutor', 1, 'assertNotCount', false, false],
-            ['createGuzzleExecutor', 2, 'assertNotCount', true, false],
+            ['createGuzzleExecutor', 0, 'assertCount', false, false, 'out', 'in'],
+            ['createGuzzleExecutor', 1, 'assertCount', true, false, 'out', 'in'],
+            ['createGuzzleExecutor', 1, 'assertCount', false, true, 'out', 'in'],
+            ['createGuzzleExecutor', 1, 'assertNotCount', true, true, 'out', 'in'],
+            ['createGuzzleExecutor', 1, 'assertNotCount', false, false, 'out', 'in'],
+            ['createGuzzleExecutor', 2, 'assertNotCount', true, false, 'out', 'in'],
 
-            ['createSoapExecutor', 0, 'assertCount', false, false],
-            ['createSoapExecutor', 1, 'assertCount', true, false],
-            ['createSoapExecutor', 1, 'assertCount', false, true],
-            ['createSoapExecutor', 1, 'assertNotCount', true, true],
-            ['createSoapExecutor', 1, 'assertNotCount', false, false],
-            ['createSoapExecutor', 2, 'assertNotCount', true, false],
+            ['createSoapExecutor', 0, 'assertCount', false, false, 'out', 'in'],
+            ['createSoapExecutor', 1, 'assertCount', true, false, 'out', 'in'],
+            ['createSoapExecutor', 1, 'assertCount', false, true, 'out', 'in'],
+            ['createSoapExecutor', 1, 'assertNotCount', true, true, 'out', 'in'],
+            ['createSoapExecutor', 1, 'assertNotCount', false, false, 'out', 'in'],
+            ['createSoapExecutor', 2, 'assertNotCount', true, false, 'out', 'in'],
 
-            ['createLaravelExecutor', 0, 'assertCount', false, false],
-            ['createLaravelExecutor', 1, 'assertCount', true, false],
-            ['createLaravelExecutor', 1, 'assertCount', false, true],
-            ['createLaravelExecutor', 1, 'assertNotCount', true, true],
-            ['createLaravelExecutor', 1, 'assertNotCount', false, false],
-            ['createLaravelExecutor', 2, 'assertNotCount', true, false],
+            ['createLaravelExecutor', 0, 'assertCount', false, false, 'in', 'out'],
+            ['createLaravelExecutor', 1, 'assertCount', true, false, 'in', 'out'],
+            ['createLaravelExecutor', 1, 'assertCount', false, true, 'in', 'out'],
+            ['createLaravelExecutor', 1, 'assertNotCount', true, true, 'in', 'out'],
+            ['createLaravelExecutor', 1, 'assertNotCount', false, false, 'in', 'out'],
+            ['createLaravelExecutor', 2, 'assertNotCount', true, false, 'in', 'out'],
 
-            ['createPsrExecutor', 0, 'assertCount', false, false],
-            ['createPsrExecutor', 1, 'assertCount', true, false],
-            ['createPsrExecutor', 1, 'assertCount', false, true],
-            ['createPsrExecutor', 1, 'assertNotCount', true, true],
-            ['createPsrExecutor', 1, 'assertNotCount', false, false],
-            ['createPsrExecutor', 2, 'assertNotCount', true, false],
+            ['createPsrExecutor', 0, 'assertCount', false, false, 'in', 'out'],
+            ['createPsrExecutor', 1, 'assertCount', true, false, 'in', 'out'],
+            ['createPsrExecutor', 1, 'assertCount', false, true, 'in', 'out'],
+            ['createPsrExecutor', 1, 'assertNotCount', true, true, 'in', 'out'],
+            ['createPsrExecutor', 1, 'assertNotCount', false, false, 'in', 'out'],
+            ['createPsrExecutor', 2, 'assertNotCount', true, false, 'in', 'out'],
         ];
     }
 
     /**
      * @dataProvider executorsProvider
      * @param string $method
+     * @param string $requestDirection
+     * @param string $responseDirection
      */
-    public function testSettingContextExtractorToCallable($method)
+    public function testSettingContextExtractorToCallable($method, $requestDirection, $responseDirection)
     {
         $handler = new ArrayMonologHandler();
 
         $logger = new Logger('test');
         $logger->pushHandler($handler);
 
-        $this->$method($logger, $handler, function(Middleware $middleware) {
+        $this->$method($logger, $handler, function(Middleware $middleware) use ($requestDirection, $responseDirection) {
             $middleware->withExtractors(
-                function ($request) {
+                function ($request, $direction) use ($requestDirection) {
+                    $this->assertEquals($requestDirection, $direction);
+
                     return ['foo' => 'bar'];
                 },
-                function ($response) {
+                function ($response, $request, $direction) use ($responseDirection) {
+                    $this->assertEquals($responseDirection, $direction);
+
                     return ['bar' => 'baz'];
                 }
             );
@@ -377,10 +389,10 @@ class MiddlewareTest extends TestCase
     public function executorsProvider()
     {
         return [
-            ['createGuzzleExecutor'],
-            ['createSoapExecutor'],
-            ['createLaravelExecutor'],
-            ['createPsrExecutor'],
+            ['createGuzzleExecutor', 'out', 'in'],
+            ['createSoapExecutor', 'out', 'in'],
+            ['createLaravelExecutor', 'in', 'out'],
+            ['createPsrExecutor', 'in', 'out'],
         ];
     }
 

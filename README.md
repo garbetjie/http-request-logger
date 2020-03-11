@@ -198,10 +198,10 @@ $middleware->withExtractors(
 // or
 
 $middleware->withExtractors(
-    function($request) {
+    function($request, $direction) {
         return [];
     },
-    function($response, $request) {
+    function($response, $request, $direction) {
         return [];
     }
 );
@@ -224,10 +224,10 @@ should be logged:
 $middleware = new Garbetjie\Http\RequestLogging\Middleware\PsrMiddleware($logger, 'debug');
 
 $middleware->withDeciders(
-    function ($request) {
+    function ($request, $direction) {
         return true;
     },
-    function ($response, $request) {
+    function ($response, $request, $direction) {
         return false;
     }
 );
@@ -235,6 +235,9 @@ $middleware->withDeciders(
 
 ## Changelog
 
+* **2.1.0**
+    * Add request/response direction to deciders and context extractors.
+    
 * **2.0.1**
     * Add additional aliases for Guzzle middleware in `LaravelServiceProvider`.
 
