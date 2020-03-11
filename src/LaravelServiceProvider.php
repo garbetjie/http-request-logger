@@ -29,10 +29,12 @@ class LaravelServiceProvider extends ServiceProvider
 
     protected function registerMiddleware()
     {
-        $this->app
-            ->when(LaravelMiddleware::class)
-            ->needs('$level')
-            ->give(config('garbetjie-http-request-logging.level'));
+        foreach ([LaravelMiddleware::class, GuzzleMiddleware::class] as $className) {
+            $this->app
+                ->when($className)
+                ->needs('$level')
+                ->give(config('garbetjie-http-request-logging.level'));
+        }
     }
 
     protected function registerGuzzleClientInterface()

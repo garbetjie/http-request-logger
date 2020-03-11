@@ -235,6 +235,9 @@ $middleware->withDeciders(
 
 ## Changelog
 
+* **2.0.1**
+    * Add additional aliases for Guzzle middleware in `LaravelServiceProvider`.
+
 * **2.0.0**
     * Split out middleware for different frameworks (no longer in a single class).
     * Add unit tests.
