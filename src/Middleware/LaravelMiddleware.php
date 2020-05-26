@@ -2,21 +2,12 @@
 
 namespace Garbetjie\Http\RequestLogging\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Garbetjie\Http\RequestLogging\Laravel\LaravelRequestLoggingMiddleware;
 
-class LaravelMiddleware extends Middleware
+/**
+ * @deprecated
+ */
+class LaravelMiddleware extends LaravelRequestLoggingMiddleware
 {
-    /**
-     * Laravel middleware handler.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @return Response
-     */
-    public function handle($request, Closure $next)
-    {
-        return $this->logRequest($request, $next, 'in');
-    }
+
 }

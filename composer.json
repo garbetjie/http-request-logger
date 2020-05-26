@@ -23,7 +23,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Garbetjie\\Http\\RequestLogging\\LaravelServiceProvider"
+                "Garbetjie\\Http\\RequestLogging\\Laravel\\LaravelServiceProvider"
             ]
         }
     },
@@ -41,5 +41,8 @@
         "laravel/framework": "6.0",
         "guzzlehttp/guzzle": "*",
         "phpunit/phpunit": "^9.0"
+    },
+    "scripts": {
+        "tests": "@php vendor/bin/phpunit"
     }
 }

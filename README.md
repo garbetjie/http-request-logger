@@ -37,13 +37,13 @@ This can be done by adding the middleware to your `$middleware` property in your
 
 // app/Http/Kernel.php:
 
-use Garbetjie\Http\RequestLogging\RequestLoggingMiddleware;
+use Garbetjie\Http\RequestLogging\Laravel\LaravelRequestLoggingMiddleware;
 
 class Kernel
 {
     // ...
     protected $middleware = [
-        RequestLoggingMiddleware::class,
+        LaravelRequestLoggingMiddleware::class,
     ];
     // ...
 }
@@ -58,7 +58,7 @@ then the same middleware object can be used. The example below makes use of the 
 <?php
 
 $app = Slim\Factory\AppFactory::create();
-$app->add(Garbetjie\Http\RequestLogging\RequestLoggingMiddleware::class);
+$app->add(Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware::class);
 $app->run();
 ```
 
@@ -88,7 +88,7 @@ If you're making use of Guzzle anywhere else, it is still easy to use this middl
 /* @var Psr\Log\LoggerInterface $logger */
 
 $stack = GuzzleHttp\HandlerStack::create();
-$stack->push(new Garbetjie\Http\RequestLogging\RequestLoggingMiddleware($logger, 'debug'), 'logging');
+$stack->push(new Garbetjie\Http\RequestLogging\Guzzle\GuzzleRequestLoggingMiddleware($logger, 'debug'), 'logging');
 $client = new GuzzleHttp\Client(['stack' => $stack]);
 ```
 
@@ -136,7 +136,7 @@ By default, the following logging context is extracted from requests and respons
     // Responses
     ['status_code' => 0, 'body_length' => 0, 'body' => '', 'headers' => []]
 
-* The bodies of each are Base64-encoded, and are truncated to a maximum length (16,384 bytes by default).
+* The bodies of each are truncated to a maximum length (16,384 bytes by default) and then base64 encoded.
 * Headers are reduced to strings (multiple values for a header are `imploded` with a `, ` separator), and the header names
   are lower-cased and hyphenated. 
 
@@ -144,6 +144,7 @@ The following is an example of what is provided with the default logging context
 
     // Request
     [
+        'id' => 'f8a8f39f',
         'method' => 'POST',
         'url' => 'https://example.org',
         'body_length' => 12,
@@ -156,6 +157,8 @@ The following is an example of what is provided with the default logging context
     
     // Response
     [
+        'id' => 'f8a8f39f',
+        'duration' => 0.125,
         'status_code' => 200,
         'body_length' => 1256,
         'body' => 'PCFkb2N0eXBlIGh0bWw+CjxodG1sPgo8aGVhZD4KICAgIDx0aXRsZT5FeGFtcGxlIERvbWFpbjwvdGl0b...',
@@ -169,7 +172,7 @@ The following is an example of what is provided with the default logging context
 ### Customising logging context
 
 If you require the context to be different to what is provided by default, you can customise the logging context that is
-extracted. This is especially useful if you're wanting to strip out `Authorization` headers, `Set-Cookie` headers, or
+extracted. This is especially useful if you want to strip out `Authorization` headers, `Set-Cookie` headers, or
 anonymize the values of certain headers.
 
 Simply create a context extractor that is a `callable`, and set the request / response extractors to use it.
@@ -188,7 +191,7 @@ class EmptyContextExtractor
 
 /* @var Psr\Log\LoggerInterface $logger */
 
-$middleware = new Garbetjie\Http\RequestLogging\Middleware\PsrMiddleware($logger, 'debug');
+$middleware = new \Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware($logger, 'debug');
 
 $middleware->withExtractors(
     new EmptyContextExtractor(),
@@ -221,7 +224,7 @@ should be logged:
 
 /* @var Psr\Log\LoggerInterface $logger */
 
-$middleware = new Garbetjie\Http\RequestLogging\Middleware\PsrMiddleware($logger, 'debug');
+$middleware = new \Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware($logger, 'debug');
 
 $middleware->withDeciders(
     function ($request, $direction) {

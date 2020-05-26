@@ -1,9 +1,9 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\Http\RequestLogging\Laravel;
 
-use Garbetjie\Http\RequestLogging\Middleware\GuzzleMiddleware;
-use Garbetjie\Http\RequestLogging\Middleware\LaravelMiddleware;
+use Garbetjie\Http\RequestLogging\Guzzle\GuzzleRequestLoggingMiddleware;
+use Garbetjie\Http\RequestLogging\Laravel\LaravelRequestLoggingMiddleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
@@ -29,7 +29,7 @@ class LaravelServiceProvider extends ServiceProvider
 
     protected function registerMiddleware()
     {
-        foreach ([LaravelMiddleware::class, GuzzleMiddleware::class] as $className) {
+        foreach ([LaravelRequestLoggingMiddleware::class, GuzzleRequestLoggingMiddleware::class] as $className) {
             $this->app
                 ->when($className)
                 ->needs('$level')
@@ -47,8 +47,8 @@ class LaravelServiceProvider extends ServiceProvider
         $this->app->extend(
             Client::class,
             function (Client $client, Container $container) {
-                $middleware = $container->make(GuzzleMiddleware::class);
-                /* @var GuzzleMiddleware $middleware */
+                $middleware = $container->make(GuzzleRequestLoggingMiddleware::class);
+                /* @var GuzzleRequestLoggingMiddleware $middleware */
 
                 $handler = $client->getConfig('handler');
                 /* @var HandlerStack $handler */

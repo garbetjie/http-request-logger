@@ -1,25 +1,15 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Middleware;
+namespace Garbetjie\Http\RequestLogging;
 
-use Closure;
 use Garbetjie\Http\RequestLogging\ContextExtractorInterface;
 use Garbetjie\Http\RequestLogging\LoggingAllowedDeciderInterface;
-use Garbetjie\Http\RequestLogging\RequestContextExtractor;
-use Garbetjie\Http\RequestLogging\ResponseContextExtractor;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
-use function array_merge;
-use function array_reverse;
 use function call_user_func;
-use function Garbetjie\Http\RequestLogging\generate_id;
-use function is_callable;
 use function microtime;
 
 abstract class Middleware
