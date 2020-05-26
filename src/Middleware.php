@@ -48,11 +48,11 @@ abstract class Middleware
      * @var array
      */
     protected $messages = [
-        'in.request' => 'http request received',
-        'in.response' => 'http response sent',
+        'incoming request' => 'http request received',
+        'outgoing response' => 'http response sent',
 
-        'out.request' => 'http request sent',
-        'out.response' => 'http response received',
+        'outgoing request' => 'http request sent',
+        'incoming response' => 'http response received',
     ];
 
     /**
@@ -126,25 +126,33 @@ abstract class Middleware
     /**
      * @param RequestInterface|Request $request
      * @param callable $handler
-     * @param string $direction
+     * @param string $requestDirection
      * @return Response|ResponseInterface
      */
-    protected function logRequest($request, callable $handler, $direction)
+    protected function logRequest($request, callable $handler, $requestDirection)
     {
         $id = generate_id();
 
-        if (call_user_func($this->requestDecider, $request, $direction)) {
-            $context = call_user_func($this->requestExtractor, $request, $direction);
-            $this->logger->log($this->level, $this->messages["{$direction}.request"], ['id' => $id] + $context);
+        if ($requestDirection === 'in') {
+            $requestMessage = $this->messages['incoming request'];
+            $responseMessage = $this->messages['outgoing response'];
+        } else {
+            $requestMessage = $this->messages['outgoing request'];
+            $responseMessage = $this->messages['incoming response'];
+        }
+
+        if (call_user_func($this->requestDecider, $request, $requestDirection)) {
+            $context = call_user_func($this->requestExtractor, $request, $requestDirection);
+            $this->logger->log($this->level, $requestMessage, ['id' => $id] + $context);
         }
 
         $started = microtime(true);
         $response = $handler($request);
         $duration = microtime(true) - $started;
 
-        if (call_user_func($this->responseDecider, $response, $request, $direction === 'in' ? 'out' : 'in')) {
-            $context = call_user_func($this->responseExtractor, $response, $request, $direction === 'in' ? 'out' : 'in');
-            $this->logger->log($this->level, $this->messages["{$direction}.response"], ['id' => $id, 'duration' => $duration] + $context);
+        if (call_user_func($this->responseDecider, $response, $request, $requestDirection === 'in' ? 'out' : 'in')) {
+            $context = call_user_func($this->responseExtractor, $response, $request, $requestDirection === 'in' ? 'out' : 'in');
+            $this->logger->log($this->level, $responseMessage, ['id' => $id, 'duration' => $duration] + $context);
         }
 
         return $response;
@@ -163,19 +171,19 @@ abstract class Middleware
     public function withMessages(?string $incomingRequestMessage = null, ?string $outgoingResponseMessage = null, ?string $outgoingRequestMessage = null, ?string $incomingResponseMessage = null)
     {
         if ($incomingRequestMessage !== null) {
-            $this->messages['in.request'] = $incomingRequestMessage;
+            $this->messages['incoming request'] = $incomingRequestMessage;
         }
 
         if ($outgoingResponseMessage !== null) {
-            $this->messages['in.response'] = $outgoingResponseMessage;
+            $this->messages['outgoing response'] = $outgoingResponseMessage;
         }
 
         if ($outgoingRequestMessage !== null) {
-            $this->messages['out.request'] = $outgoingRequestMessage;
+            $this->messages['outgoing request'] = $outgoingRequestMessage;
         }
 
         if ($incomingResponseMessage !== null) {
-            $this->messages['out.response'] = $incomingResponseMessage;
+            $this->messages['incoming response'] = $incomingResponseMessage;
         }
 
         return $this;
