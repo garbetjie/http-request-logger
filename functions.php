@@ -2,6 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
+use EndyJasmi\Cuid;
 use function bin2hex;
 use function implode;
 use function is_array;
@@ -25,6 +26,9 @@ function normalize_headers(array $headers) {
     return $formatted;
 }
 
+/**
+ * @return string
+ */
 function generate_id() {
-    return bin2hex(random_bytes(4));
+    return Cuid::make();
 }
