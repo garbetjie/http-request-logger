@@ -1,0 +1,17 @@
+---
+language: php
+jobs:
+  allow_failures:
+  - php: nightly
+php:
+- 7.2
+- 7.3
+- 7.4
+- nightly
+env:
+- LARAVEL_VERSION=7.0
+- LARAVEL_VERSION=6.0
+before_install:
+- composer require "laravel/framework:^${LARAVEL_VERSION}" --no-update
+install:
+- composer update --prefer-source --no-interaction

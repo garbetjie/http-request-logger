@@ -39,7 +39,7 @@
         "ext-simplexml": "Required for logging SOAP requests."
     },
     "require-dev": {
-        "laravel/framework": "6.0",
+        "laravel/framework": "^6.0 || ^7.0",
         "guzzlehttp/guzzle": "*",
         "phpunit/phpunit": "^9.0"
     },
