@@ -238,6 +238,10 @@ $middleware->withDeciders(
 
 ## Changelog
 
+* **3.0.1**
+    * Move Laravel service provider.
+    * Fix path to default config file.
+    
 * **3.0.0**
     * Refactor structure of middleware, separating them into incoming & outgoing request middleware.
 
