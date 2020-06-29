@@ -238,6 +238,9 @@ $middleware->withDeciders(
 
 ## Changelog
 
+* **2.2.1**
+    * Fix incorrect path to config file in Laravel service provider.
+
 * **2.2.0**
     * Deprecate simpler class names for middleware, and start using more explicit class names.
     * Change to using [cuid's](https://github.com/endyjasmi/cuid) for request/response ID generation.

@@ -19,7 +19,7 @@ class LaravelServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config.php', 'garbetjie-http-request-logging');
 
         $this->publishes([
-            __DIR__ . '/../config.php' => config_path('garbetjie-http-request-logging.php'),
+            __DIR__ . '/../../config.php' => config_path('garbetjie-http-request-logging.php'),
         ]);
 
         $this->registerGuzzleClient();
