@@ -37,13 +37,13 @@ This can be done by adding the middleware to your `$middleware` property in your
 
 // app/Http/Kernel.php:
 
-use Garbetjie\Http\RequestLogging\Laravel\LaravelRequestLoggingMiddleware;
+use Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware;
 
 class Kernel
 {
     // ...
     protected $middleware = [
-        LaravelRequestLoggingMiddleware::class,
+        IncomingRequestLoggingMiddleware::class,
     ];
     // ...
 }
@@ -58,7 +58,7 @@ then the same middleware object can be used. The example below makes use of the 
 <?php
 
 $app = Slim\Factory\AppFactory::create();
-$app->add(Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware::class);
+$app->add(Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware::class);
 $app->run();
 ```
 
@@ -88,7 +88,7 @@ If you're making use of Guzzle anywhere else, it is still easy to use this middl
 /* @var Psr\Log\LoggerInterface $logger */
 
 $stack = GuzzleHttp\HandlerStack::create();
-$stack->push(new Garbetjie\Http\RequestLogging\Guzzle\GuzzleRequestLoggingMiddleware($logger, 'debug'), 'logging');
+$stack->push(new Garbetjie\Http\RequestLogging\OutgoingRequestLoggingMiddleware($logger, 'debug'), 'logging');
 $client = new GuzzleHttp\Client(['stack' => $stack]);
 ```
 
@@ -191,7 +191,7 @@ class EmptyContextExtractor
 
 /* @var Psr\Log\LoggerInterface $logger */
 
-$middleware = new \Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware($logger, 'debug');
+$middleware = new \Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware($logger, 'debug');
 
 $middleware->withExtractors(
     new EmptyContextExtractor(),
@@ -224,7 +224,7 @@ should be logged:
 
 /* @var Psr\Log\LoggerInterface $logger */
 
-$middleware = new \Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware($logger, 'debug');
+$middleware = new \Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware($logger, 'debug');
 
 $middleware->withDeciders(
     function ($request, $direction) {
@@ -237,6 +237,9 @@ $middleware->withDeciders(
 ```
 
 ## Changelog
+
+* **3.0.0**
+    * Refactor structure of middleware, separating them into incoming & outgoing request middleware.
 
 * **2.2.1**
     * Fix incorrect path to config file in Laravel service provider.
