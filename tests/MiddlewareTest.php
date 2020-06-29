@@ -3,10 +3,9 @@
 namespace Garbetjie\Http\RequestLogging\Tests;
 
 use Closure;
-use Garbetjie\Http\RequestLogging\Guzzle\GuzzleRequestLoggingMiddleware;
-use Garbetjie\Http\RequestLogging\Laravel\LaravelRequestLoggingMiddleware;
+use Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware;
 use Garbetjie\Http\RequestLogging\Middleware;
-use Garbetjie\Http\RequestLogging\Psr\PsrRequestLoggingMiddleware;
+use Garbetjie\Http\RequestLogging\OutgoingRequestLoggingMiddleware;
 use Garbetjie\Http\RequestLogging\RequestContextExtractor;
 use Garbetjie\Http\RequestLogging\ResponseContextExtractor;
 use Garbetjie\Http\RequestLogging\SoapClient;
@@ -147,7 +146,7 @@ class MiddlewareTest extends TestCase
                 new Response(200, ['Content-Type' => 'application/json'], 'response body')
             ]);
 
-            $middleware = $this->createMiddleware($logger, GuzzleRequestLoggingMiddleware::class);
+            $middleware = $this->createMiddleware($logger, OutgoingRequestLoggingMiddleware::class);
 
             if ($fnMiddleware) {
                 $fnMiddleware($middleware);
@@ -176,7 +175,7 @@ class MiddlewareTest extends TestCase
             $handler->clear();
             $request = new Request([], [], [], [], [], ['REQUEST_METHOD' => 'POST', 'HTTPS' => 'on', 'HTTP_HOST' => 'example.org', 'HTTP_CONTENT_TYPE' => 'text/xml'], 'request body');
 
-            $middleware = $this->createMiddleware($logger, LaravelRequestLoggingMiddleware::class);
+            $middleware = $this->createMiddleware($logger, IncomingRequestLoggingMiddleware::class);
 
             if ($fnMiddleware) {
                 $fnMiddleware($middleware);
@@ -202,7 +201,7 @@ class MiddlewareTest extends TestCase
 
             $request = new ServerRequest('POST', 'https://example.org', ['Content-Type' => 'text/xml'], 'request body');
 
-            $middleware = $this->createMiddleware($logger, PsrRequestLoggingMiddleware::class);
+            $middleware = $this->createMiddleware($logger, IncomingRequestLoggingMiddleware::class);
             if ($fnMiddleware) {
                 $fnMiddleware($middleware);
             }
@@ -232,7 +231,7 @@ class MiddlewareTest extends TestCase
                 new Response(200, ['Content-Type' => 'text/xml'], $this->soapResponse)
             ]);
 
-            $middleware = $this->createMiddleware($logger, GuzzleRequestLoggingMiddleware::class);
+            $middleware = $this->createMiddleware($logger, OutgoingRequestLoggingMiddleware::class);
 
             if ($fnMiddleware) {
                 $fnMiddleware($middleware);
@@ -450,7 +449,7 @@ class MiddlewareTest extends TestCase
     /**
      * @param Logger $logger
      * @param string $className
-     * @return GuzzleRequestLoggingMiddleware|LaravelRequestLoggingMiddleware|PsrRequestLoggingMiddleware
+     * @return IncomingRequestLoggingMiddleware|OutgoingRequestLoggingMiddleware
      */
     private function createMiddleware($logger, $className)
     {

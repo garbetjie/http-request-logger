@@ -1,14 +1,16 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Psr;
+namespace Garbetjie\Http\RequestLogging;
 
-use Garbetjie\Http\RequestLogging\Middleware;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class PsrRequestLoggingMiddleware extends Middleware implements MiddlewareInterface
+class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareInterface
 {
     /**
      * PSR-compliant middleware handler.
@@ -26,5 +28,17 @@ class PsrRequestLoggingMiddleware extends Middleware implements MiddlewareInterf
             },
             'in'
         );
+    }
+
+    /**
+     * Laravel middleware handler.
+     *
+     * @param Request $request
+     * @param Closure $next
+     * @return Response
+     */
+    public function handle($request, Closure $next)
+    {
+        return $this->logRequest($request, $next, 'in');
     }
 }

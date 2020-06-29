@@ -1,11 +1,10 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Guzzle;
+namespace Garbetjie\Http\RequestLogging;
 
 use Closure;
-use Garbetjie\Http\RequestLogging\Middleware;
 
-class GuzzleRequestLoggingMiddleware extends Middleware
+class OutgoingRequestLoggingMiddleware extends Middleware
 {
     /**
      * Guzzle middleware handler.
