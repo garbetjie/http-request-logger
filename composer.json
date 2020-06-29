@@ -41,7 +41,7 @@
     "require-dev": {
         "laravel/framework": "^6.0 || ^7.0",
         "guzzlehttp/guzzle": "*",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^8.0 || ^9.0"
     },
     "scripts": {
         "tests": "@php vendor/bin/phpunit"
