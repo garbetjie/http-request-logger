@@ -21,13 +21,11 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->logRequest(
-            $request,
-            function($request) use ($handler) {
-                return $handler->handle($request);
-            },
-            'in'
-        );
+        [$started, $id] = $this->logRequest($request, 'in');
+        $response = $handler->handle($request);
+        $this->logResponse($request, $response, $id, $started, 'in');
+
+        return $response;
     }
 
     /**
@@ -39,6 +37,10 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      */
     public function handle($request, Closure $next)
     {
-        return $this->logRequest($request, $next, 'in');
+        [$started, $id] = $this->logRequest($request, 'in');
+        $response = $next($request);
+        $this->logResponse($request, $response, $id, $started, 'in');
+
+        return $response;
     }
 }

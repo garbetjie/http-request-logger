@@ -115,7 +115,7 @@ class MiddlewareTest extends TestCase
         $this->assertArrayHasKey('content-type', $request['context']['headers'], 'Content-Type request header');
         $this->assertStringContainsString('text/xml', $request['context']['headers']['content-type'], 'Content-Type request header');
 
-        foreach (['id', 'status_code', 'body_length', 'body', 'headers'] as $key) {
+        foreach (['id', 'status_code', 'body_length', 'body', 'headers', 'duration'] as $key) {
             $this->assertArrayHasKey($key, $response['context']);
         }
 

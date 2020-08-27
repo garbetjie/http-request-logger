@@ -3,6 +3,8 @@
 namespace Garbetjie\Http\RequestLogging;
 
 use Closure;
+use GuzzleHttp\Exception\GuzzleException;
+use function method_exists;
 
 class OutgoingRequestLoggingMiddleware extends Middleware
 {
@@ -15,12 +17,21 @@ class OutgoingRequestLoggingMiddleware extends Middleware
     public function __invoke(callable $handler)
     {
         return function ($request, array $options) use ($handler) {
-            return $this->logRequest(
-                $request,
-                function ($request) use ($handler, $options) {
-                    return $handler($request, $options);
+            [$started, $id] = $this->logRequest($request, 'out');
+
+            return $handler($request, $options)->then(
+                function ($response) use ($started, $id, $request) {
+                    $this->logResponse($request, $response, $id, $started, 'out');
+
+                    return $response;
                 },
-                'out'
+                function ($e) use ($request, $started, $id) {
+                    if ($response = method_exists($e, 'getResponse') ? $e->getResponse() : null) {
+                        $this->logResponse($request, $response, $id, $started, 'out');
+                    }
+
+                    throw $e;
+                }
             );
         };
     }
