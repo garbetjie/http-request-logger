@@ -6,6 +6,8 @@ An HTTP request logger, that makes it really easy to log incoming & outgoing req
 This library easily enables you to be able to log outgoing requests (using [Guzzle](http://docs.guzzlephp.org) middleware),
 as well as incoming requests using the bundled PSR-compliant middleware that also works with Laravel.
 
+![](https://travis-ci.com/garbetjie/http-request-logger.svg?branch=master&status=started)
+
 
 ## Table of contents
 
@@ -237,6 +239,10 @@ $middleware->withDeciders(
 ```
 
 ## Changelog
+
+* **3.1.0**
+    * Fix bug where Guzzle request logging was logging incorrect duration, and was prevent requests from being executed
+      concurrently.
 
 * **3.0.1**
     * Move Laravel service provider.
