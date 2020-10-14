@@ -3,10 +3,8 @@
 namespace Garbetjie\Http\RequestLogging;
 
 use EndyJasmi\Cuid;
-use function bin2hex;
 use function implode;
 use function is_array;
-use function random_bytes;
 use function str_replace;
 use function strtolower;
 
