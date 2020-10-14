@@ -2,10 +2,6 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Garbetjie\Http\RequestLogging\Guzzle\GuzzleRequestLoggingMiddleware;
-use Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware;
-use Garbetjie\Http\RequestLogging\Laravel\LaravelRequestLoggingMiddleware;
-use Garbetjie\Http\RequestLogging\OutgoingRequestLoggingMiddleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
@@ -24,8 +20,9 @@ class LaravelServiceProvider extends ServiceProvider
             __DIR__ . '/../config.php' => config_path('garbetjie-http-request-logging.php'),
         ]);
 
-        $this->registerGuzzleClient();
-        $this->registerGuzzleClientInterface();
+        $this->registerGuzzleHandlerStackIfNotRegistered();
+        $this->registerGuzzleClientIfNotRegistered();
+        $this->registerGuzzleClientInterfaceIfNotRegistered();
         $this->registerMiddleware();
     }
 
@@ -39,28 +36,32 @@ class LaravelServiceProvider extends ServiceProvider
         }
     }
 
-    protected function registerGuzzleClientInterface()
+    protected function registerGuzzleClientInterfaceIfNotRegistered()
     {
-        $this->app->alias(Client::class, ClientInterface::class);
+        $this->app->bindIf(ClientInterface::class, Client::class);
     }
 
-    protected function registerGuzzleClient()
+    protected function registerGuzzleClientIfNotRegistered()
     {
-        $this->app->extend(
+        $this->app->bindIf(
             Client::class,
-            function (Client $client, Container $container) {
+            function (Container $container) {
+                return new Client(['handler' => $container->make(HandlerStack::class)]);
+            }
+        );
+    }
+
+    protected function registerGuzzleHandlerStackIfNotRegistered()
+    {
+        $this->app->bindIf(
+            HandlerStack::class,
+            function (Container $container) {
                 $middleware = $container->make(OutgoingRequestLoggingMiddleware::class);
-                /* @var OutgoingRequestLoggingMiddleware $middleware */
 
-                $handler = $client->getConfig('handler');
-                /* @var HandlerStack $handler */
+                $stack = HandlerStack::create();
+                $stack->push($middleware, 'garbetjie-http-request-logging');
 
-                // Replace the HTTP request logging middleware on the handler stack. We remove it first, so that it isn't
-                // accidentally added multiple times.
-                $handler->remove('garbetjie-http-request-logging');
-                $handler->push($middleware, 'garbetjie-http-request-logging');
-
-                return new Client(['handler' => $handler] + $client->getConfig());
+                return $stack;
             }
         );
     }
