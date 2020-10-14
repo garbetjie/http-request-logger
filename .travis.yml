@@ -3,6 +3,8 @@ language: php
 jobs:
   allow_failures:
   - php: nightly
+  - php: 7.2
+    env: LARAVEL_VERSION=8.0
 php:
 - 7.2
 - 7.3
@@ -11,6 +13,7 @@ php:
 env:
 - LARAVEL_VERSION=7.0
 - LARAVEL_VERSION=6.0
+- LARAVEL_VERSION=8.0
 before_install:
 - composer require "laravel/framework:^${LARAVEL_VERSION}" --no-update
 install:
