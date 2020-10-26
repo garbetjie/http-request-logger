@@ -45,7 +45,7 @@ class RequestContextExtractor
      * @param RequestInterface $request
      * @return array
      */
-    private function extractRequestPSR($request)
+    protected function extractRequestPSR(RequestInterface $request)
     {
         $body = $request->getBody();
         $body->rewind();
@@ -65,7 +65,7 @@ class RequestContextExtractor
      * @param Request $request
      * @return array
      */
-    private function extractRequestLaravel($request)
+    protected function extractRequestLaravel(Request $request)
     {
         $content = $request->getContent();
 

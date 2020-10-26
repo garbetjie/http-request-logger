@@ -2,14 +2,14 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
-use Garbetjie\Http\RequestLogging\ContextExtractorInterface;
 use Garbetjie\Http\RequestLogging\ResponseContextExtractor;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use function base64_encode;
 
 class ResponseContextExtractorTest extends TestCase
 {
+    use CreatesResponses;
+
     public function testImplementsInterface()
     {
         $this->assertIsCallable(new ResponseContextExtractor());
@@ -39,8 +39,8 @@ class ResponseContextExtractorTest extends TestCase
     public function responseProvider()
     {
         return [
-            'guzzle/psr response' => [new Response(200, ['Content-Type' => 'custom'], 'body')],
-            'laravel response' => [new \Illuminate\Http\Response('body', 200, ['Content-Type' => 'custom'])],
+            'guzzle/psr response' => [$this->createPsrResponse()],
+            'laravel response' => [$this->createLaravelResponse()],
         ];
     }
 }

@@ -2,15 +2,14 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
-use Garbetjie\Http\RequestLogging\ContextExtractorInterface;
 use Garbetjie\Http\RequestLogging\RequestContextExtractor;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use function base64_encode;
 
 class RequestContextExtractorTest extends TestCase
 {
+    use CreatesRequests;
+
     public function testImplementsInterface()
     {
         $this->assertIsCallable(new RequestContextExtractor());
@@ -41,11 +40,11 @@ class RequestContextExtractorTest extends TestCase
     {
         return [
             // Guzzle/PSR requests.
-            'guzzle/psr incoming server request' => [new ServerRequest('GET', 'https://example.org', ['Content-Type' => 'application/json'], 'body')],
-            'guzzle/psr outgoing request' => [new Request('GET', 'https://example.org', ['Content-Type' => 'application/json'], 'body')],
+            'guzzle/psr incoming server request' => [$this->createPsrServerRequest()],
+            'guzzle/psr outgoing request' => [$this->createPsrRequest()],
 
             // Laravel middleware request.
-            'laravel incoming server request' => [new \Illuminate\Http\Request([], [], [], [], [], ['REQUEST_METHOD' => 'GET', 'HTTP_CONTENT_TYPE' => 'application/json', 'HTTP_HOST' => 'example.org'], 'body')],
+            'laravel incoming server request' => [$this->createLaravelRequest()],
         ];
     }
 }

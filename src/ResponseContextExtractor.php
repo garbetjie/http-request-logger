@@ -50,7 +50,7 @@ class ResponseContextExtractor
      * @param ResponseInterface $response
      * @return array
      */
-    private function extractResponsePSR($response)
+    protected function extractResponsePSR(ResponseInterface $response)
     {
         $body = $response->getBody();
         $body->rewind();
@@ -69,7 +69,7 @@ class ResponseContextExtractor
      * @param PromiseInterface $promise
      * @return array
      */
-    private function extractResponsePromise($promise)
+    protected function extractResponsePromise(PromiseInterface $promise)
     {
         return $this->extractResponsePSR(
             $promise->wait(true)
@@ -80,7 +80,7 @@ class ResponseContextExtractor
      * @param Response $response
      * @return array
      */
-    private function extractResponseLaravel($response)
+    protected function extractResponseLaravel(Response $response)
     {
         $body = $response->getContent();
 
