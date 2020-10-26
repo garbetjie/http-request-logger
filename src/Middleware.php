@@ -2,12 +2,11 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Garbetjie\Http\RequestLogging\ContextExtractorInterface;
-use Garbetjie\Http\RequestLogging\LoggingAllowedDeciderInterface;
 use Illuminate\Http\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use function call_user_func;
+use function func_get_args;
 use function microtime;
 
 abstract class Middleware
@@ -63,14 +62,14 @@ abstract class Middleware
         $this->level = $level;
 
         // Set the context extractors.
-        $this->withExtractors(new RequestContextExtractor(), new ResponseContextExtractor());
+        $this->setExtractors(new RequestContextExtractor(), new ResponseContextExtractor());
 
         // By default, always log messages.
-        $this->withDeciders(
-            function() {
+        $this->setDeciders(
+            function () {
                 return true;
             },
-            function() {
+            function () {
                 return true;
             }
         );
@@ -84,7 +83,7 @@ abstract class Middleware
      *
      * @return static
      */
-    public function withDeciders(?callable $request, ?callable $response)
+    public function setDeciders(?callable $request, ?callable $response)
     {
         if ($request) {
             $this->requestDecider = $request;
@@ -98,6 +97,20 @@ abstract class Middleware
     }
 
     /**
+     * Alias of $this->setDeciders().
+     *
+     * @alias Middleware::setDeciders
+     * @param callable|null $request
+     * @param callable|null $response
+     *
+     * @return static
+     */
+    public function withDeciders(?callable $request, ?callable $response)
+    {
+        return $this->setDeciders($request, $response);
+    }
+
+    /**
      * Sets the extractors used when extracting context for log messages.
      *
      * The callable passed in $request will be used to extract the context for a request. The callable in $response
@@ -108,7 +121,7 @@ abstract class Middleware
      *
      * @return static
      */
-    public function withExtractors(?callable $request, ?callable $response)
+    public function setExtractors(?callable $request, ?callable $response)
     {
         if ($request) {
             $this->requestExtractor = $request;
@@ -119,6 +132,20 @@ abstract class Middleware
         }
 
         return $this;
+    }
+
+    /**
+     * Alias of $this->>setExtractors().
+     *
+     * @alias Middleware::setDeciders()
+     * @param callable|null $request
+     * @param callable|null $response
+     *
+     * @return static
+     */
+    public function withExtractors(?callable $request, ?callable $response)
+    {
+        return $this->setExtractors($request, $response);
     }
 
     /**
@@ -164,8 +191,12 @@ abstract class Middleware
      *
      * @return static
      */
-    public function withMessages(?string $incomingRequestMessage = null, ?string $outgoingResponseMessage = null, ?string $outgoingRequestMessage = null, ?string $incomingResponseMessage = null)
-    {
+    public function setMessages(
+        ?string $incomingRequestMessage = null,
+        ?string $outgoingResponseMessage = null,
+        ?string $outgoingRequestMessage = null,
+        ?string $incomingResponseMessage = null
+    ) {
         if ($incomingRequestMessage !== null) {
             $this->messages['incoming request'] = $incomingRequestMessage;
         }
@@ -183,5 +214,25 @@ abstract class Middleware
         }
 
         return $this;
+    }
+
+    /**
+     * Alias of $this->setMessages().
+     *
+     * @alias Middleware::setMessages()
+     * @param string|null $incomingRequestMessage
+     * @param string|null $outgoingResponseMessage
+     * @param string|null $outgoingRequestMessage
+     * @param string|null $incomingResponseMessage
+     *
+     * @return static
+     */
+    public function withMessages(
+        ?string $incomingRequestMessage = null,
+        ?string $outgoingResponseMessage = null,
+        ?string $outgoingRequestMessage = null,
+        ?string $incomingResponseMessage = null
+    ) {
+        return $this->setMessages(...func_get_args());
     }
 }
