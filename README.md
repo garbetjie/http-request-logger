@@ -195,14 +195,14 @@ class EmptyContextExtractor
 
 $middleware = new \Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware($logger, 'debug');
 
-$middleware->withExtractors(
+$middleware->setExtractors(
     new EmptyContextExtractor(),
     new EmptyContextExtractor()
 );
 
 // or
 
-$middleware->withExtractors(
+$middleware->setExtractors(
     function($request, $direction) {
         return [];
     },
@@ -228,7 +228,7 @@ should be logged:
 
 $middleware = new \Garbetjie\Http\RequestLogging\IncomingRequestLoggingMiddleware($logger, 'debug');
 
-$middleware->withDeciders(
+$middleware->setDeciders(
     function ($request, $direction) {
         return true;
     },
@@ -239,6 +239,11 @@ $middleware->withDeciders(
 ```
 
 ## Changelog
+
+* **4.1.0**
+    * Refactor the `with{Deciders,Messages,Extractors}` to be `set{Deciders,Messages,Extractors}`. Backwards compatibility maintained.
+    * Add `Safe{Request,Response}ContextExtractor` extractors that replace the values of sensitive headers
+      (`set-cookie`, `cookie`, and `authorization` headers).
 
 * **4.0.0**
     * Add tests for Laravel 8.0.
