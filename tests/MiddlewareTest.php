@@ -262,7 +262,8 @@ class MiddlewareTest extends TestCase
         $logger->pushHandler($handler);
 
         $this->$method($logger, $handler, function(Middleware $middleware) {
-            $middleware->setExtractors(new RequestContextExtractor(), new ResponseContextExtractor());
+            $middleware->requestContextExtractor(new RequestContextExtractor());
+            $middleware->responseContextExtractor(new ResponseContextExtractor());
         })();
 
         $this->assertArrayHasKey('context', $handler->logs(0));
@@ -292,12 +293,15 @@ class MiddlewareTest extends TestCase
         $logger->pushHandler($handler);
 
         $this->$method($logger, $handler, function(Middleware $middleware) use ($requestsEnabled, $responsesEnabled, $requestDirection, $responseDirection) {
-            $middleware->setDeciders(
+            $middleware->enableRequestLogging(
                 function($request, $direction) use ($requestsEnabled, $requestDirection) {
                     $this->assertEquals($requestDirection, $direction);
 
                     return $requestsEnabled;
-                },
+                }
+            );
+
+            $middleware->enableResponseLogging(
                 function($response, $request, $direction) use ($responsesEnabled, $responseDirection) {
                     $this->assertEquals($responseDirection, $direction);
 
@@ -356,12 +360,15 @@ class MiddlewareTest extends TestCase
         $logger->pushHandler($handler);
 
         $this->$method($logger, $handler, function(Middleware $middleware) use ($requestDirection, $responseDirection) {
-            $middleware->setExtractors(
+            $middleware->requestContextExtractor(
                 function ($request, $direction) use ($requestDirection) {
                     $this->assertEquals($requestDirection, $direction);
 
                     return ['foo' => 'bar'];
-                },
+                }
+            );
+
+            $middleware->responseContextExtractor(
                 function ($response, $request, $direction) use ($responseDirection) {
                     $this->assertEquals($responseDirection, $direction);
 
@@ -457,7 +464,8 @@ class MiddlewareTest extends TestCase
 
         $middleware = new $className($logger, 'debug');
         $middleware->setMessages('request in', 'response out', 'request out', 'response in');
-        $middleware->setExtractors(new RequestContextExtractor(), new ResponseContextExtractor());
+        $middleware->requestContextExtractor(new RequestContextExtractor());
+        $middleware->responseContextExtractor(new ResponseContextExtractor());
 
         return $middleware;
     }
