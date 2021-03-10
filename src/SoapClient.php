@@ -28,11 +28,11 @@ class SoapClient extends \SoapClient
      * @param array|null $options
      * @throws \SoapFault
      */
-    public function __construct(ClientInterface $client, $wsdl, array $options = null)
+    public function __construct(ClientInterface $client, $wsdl = null, array $options = null)
     {
         $this->client = $client;
 
-        parent::__construct($wsdl, $options);
+        parent::__construct($wsdl, $options ?: []);
     }
 
 
