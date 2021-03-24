@@ -35,16 +35,16 @@ class ResponseContext
     {
         switch (true) {
             case $response instanceof ResponseInterface:
-                return $this->extractResponsePSR($response);
+                return $this->contextFromPSR($response);
 
             case $response instanceof Response:
-                return $this->extractResponseLaravel($response);
+                return $this->contextFromSymfony($response);
 
             case $response instanceof PromiseInterface:
-                return $this->extractResponsePromise($response);
+                return $this->contextFromPromise($response);
 
             case is_string($response):
-                return $this->extractResponseString($response);
+                return $this->contextFromString($response);
 
             default:
                 throw new InvalidArgumentException(sprintf('Unknown response instance "%s" provided.', get_class($response)));
@@ -55,7 +55,7 @@ class ResponseContext
      * @param string $response
      * @return array
      */
-    protected function extractResponseString(string $response): array
+    protected function contextFromString(string $response): array
     {
         $headers = [];
 
@@ -82,7 +82,7 @@ class ResponseContext
      * @param ResponseInterface $response
      * @return array
      */
-    protected function extractResponsePSR(ResponseInterface $response)
+    protected function contextFromPSR(ResponseInterface $response): array
     {
         $body = $response->getBody();
         $body->rewind();
@@ -101,9 +101,9 @@ class ResponseContext
      * @param PromiseInterface $promise
      * @return array
      */
-    protected function extractResponsePromise(PromiseInterface $promise)
+    protected function contextFromPromise(PromiseInterface $promise): array
     {
-        return $this->extractResponsePSR(
+        return $this->contextFromPSR(
             $promise->wait(true)
         );
     }
@@ -112,7 +112,7 @@ class ResponseContext
      * @param Response $response
      * @return array
      */
-    protected function extractResponseLaravel(Response $response)
+    protected function contextFromSymfony(Response $response): array
     {
         $body = $response->getContent();
 

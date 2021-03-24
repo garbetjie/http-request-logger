@@ -10,14 +10,14 @@ class SafeRequestContext extends RequestContext
     protected $headers = ['authorization', 'cookie'];
     protected $replacement = '***';
 
-    protected function extractRequestPSR(RequestInterface $request)
+    protected function contextFromPSR(RequestInterface $request)
     {
-        return $this->makeSafe(parent::extractRequestPSR($request));
+        return $this->makeSafe(parent::contextFromPSR($request));
     }
 
-    protected function extractRequestLaravel(Request $request)
+    protected function contextFromSymfony(Request $request)
     {
-        return $this->makeSafe(parent::extractRequestLaravel($request));
+        return $this->makeSafe(parent::contextFromSymfony($request));
     }
 
     protected function makeSafe(array $context)

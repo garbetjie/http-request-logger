@@ -2,7 +2,6 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
-use Garbetjie\Http\RequestLogging\LoggedRequest;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -35,21 +34,27 @@ class RequestContext
     {
         switch (true) {
             case $request instanceof Request:
-                return $this->extractRequestLaravel($request);
+                return $this->contextFromSymfony($request);
 
             case $request instanceof ServerRequestInterface:
             case $request instanceof RequestInterface:
-                return $this->extractRequestPSR($request);
+                return $this->contextFromPSR($request);
 
             case is_string($request):
-                return $this->extractRequestFromString($request);
+                return $this->contextFromString($request);
 
             default:
                 throw new InvalidArgumentException(sprintf('Unknown request instance "%s" provided.', get_class($request)));
         }
     }
 
-    protected function extractRequestFromString($request)
+    /**
+     * Extract context from the given request, using server variables.
+     *
+     * @param string $request
+     * @return array
+     */
+    protected function contextFromString(string $request): array
     {
         $headers = [];
 
@@ -81,10 +86,12 @@ class RequestContext
     }
 
     /**
+     * Extract context from a PSR-compliant request.
+     *
      * @param RequestInterface $request
      * @return array
      */
-    protected function extractRequestPSR(RequestInterface $request)
+    protected function contextFromPSR(RequestInterface $request): array
     {
         $body = $request->getBody();
         $body->rewind();
@@ -101,16 +108,18 @@ class RequestContext
     }
 
     /**
-     * @param LoggedRequest $request
+     * Extract context from a Symfony request (which includes Laravel requests).
+     *
+     * @param Request $request
      * @return array
      */
-    protected function extractRequestLaravel(Request $request)
+    protected function contextFromSymfony(Request $request): array
     {
         $content = $request->getContent();
 
         return [
-            'method' => $request->method(),
-            'url' => $request->fullUrl(),
+            'method' => $request->getMethod(),
+            'url' => $request->getUri(),
             'body_length' => strlen($content),
             'body' => base64_encode(substr($content, 0, $this->maxBodyLength)),
             'headers' => normalize_headers($request->headers->all()),
