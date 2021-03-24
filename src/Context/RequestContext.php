@@ -27,8 +27,7 @@ class RequestContext
     /**
      * @param RequestInterface|Request|string $request
      * @return array
-     *@throws InvalidArgumentException
-     *
+     * @throws InvalidArgumentException
      */
     public function __invoke($request): array
     {
