@@ -50,4 +50,9 @@ trait CreatesRequests
             'body'
         );
     }
+
+    protected function createStringRequest(): string
+    {
+        return 'body';
+    }
 }

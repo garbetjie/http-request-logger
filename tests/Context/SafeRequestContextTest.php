@@ -1,24 +1,23 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
-use Garbetjie\Http\RequestLogging\SafeRequestContextExtractor;
+use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
+use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 
-class SafeRequestContextExtractorTest extends TestCase
+class SafeRequestContextTest extends TestCase
 {
     use CreatesRequests;
 
     /**
      * @dataProvider requestProvider
      * @param $request
-     *
-     * @throws \ReflectionException
      */
     public function testHeadersAreMasked($request)
     {
-        $extractor = new SafeRequestContextExtractor();
+        $extractor = new SafeRequestContext();
         $context = $extractor($request);
 
         $reflection = new ReflectionObject($extractor);
@@ -37,12 +36,10 @@ class SafeRequestContextExtractorTest extends TestCase
     public function requestProvider()
     {
         return [
-            // Guzzle/PSR requests.
-            'guzzle/psr incoming server request' => [$this->createPsrServerRequest()],
-            'guzzle/psr outgoing request' => [$this->createPsrRequest()],
-
-            // Laravel middleware request.
-            'laravel incoming server request' => [$this->createLaravelRequest()],
+            'incoming guzzle/psr server request' => [$this->createPsrServerRequest()],
+            'outgoing guzzle/psr request' => [$this->createPsrRequest()],
+            'incoming laravel server request' => [$this->createLaravelRequest()],
+            'incoming string request' => [$this->createStringRequest()],
         ];
     }
 }

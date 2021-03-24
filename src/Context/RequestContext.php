@@ -1,17 +1,22 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\Http\RequestLogging\Context;
 
-use Symfony\Component\HttpFoundation\Request;
+use Garbetjie\Http\RequestLogging\LoggedRequest;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Request;
 use function base64_encode;
+use function Garbetjie\Http\RequestLogging\normalize_headers;
 use function get_class;
+use function is_string;
+use function sprintf;
+use function stripos;
 use function strlen;
 use function substr;
 
-class RequestContextExtractor
+class RequestContext
 {
     private $maxBodyLength;
 
@@ -21,10 +26,10 @@ class RequestContextExtractor
     }
 
     /**
-     * @param RequestInterface|Request $request
-     * @throws InvalidArgumentException
-     *
+     * @param RequestInterface|Request|string $request
      * @return array
+     *@throws InvalidArgumentException
+     *
      */
     public function __invoke($request): array
     {
@@ -36,9 +41,43 @@ class RequestContextExtractor
             case $request instanceof RequestInterface:
                 return $this->extractRequestPSR($request);
 
+            case is_string($request):
+                return $this->extractRequestFromString($request);
+
             default:
                 throw new InvalidArgumentException(sprintf('Unknown request instance "%s" provided.', get_class($request)));
         }
+    }
+
+    protected function extractRequestFromString($request)
+    {
+        $headers = [];
+
+        foreach ($_SERVER as $key => $value) {
+            if (stripos($key, 'http_') === 0) {
+                $headers[substr($key, 5)] = $value;
+            }
+        }
+
+        $method = $_SERVER['REQUEST_METHOD'] ?? null;
+        $url = null;
+
+        // If we have environment values indicating we're processing an HTTP request, then we can attempt to extract them.
+        if (isset($_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])) {
+            $url = sprintf('%s://%s%s',
+                !empty($_SERVER['HTTPS']) ? 'https' : 'http',
+                $_SERVER['HTTP_HOST'],
+                $_SERVER['REQUEST_URI']
+            );
+        }
+
+        return [
+            'method' => $method,
+            'url' => $url,
+            'body_length' => strlen($request),
+            'body' => base64_encode(substr($request, 0, $this->maxBodyLength)),
+            'headers' => normalize_headers($headers),
+        ];
     }
 
     /**
@@ -62,7 +101,7 @@ class RequestContextExtractor
     }
 
     /**
-     * @param Request $request
+     * @param LoggedRequest $request
      * @return array
      */
     protected function extractRequestLaravel(Request $request)

@@ -1,24 +1,23 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
-use Garbetjie\Http\RequestLogging\SafeRequestContextExtractor;
-use Garbetjie\Http\RequestLogging\SafeResponseContextExtractor;
+use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
+use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 
-class SafeResponseContextExtractorTest extends TestCase
+class SafeResponseContextTest extends TestCase
 {
     use CreatesResponses;
 
     /**
      * @dataProvider responseProvider
      * @param $response
-     * @throws \ReflectionException
      */
     public function testHeadersAreMasked($response)
     {
-        $extractor = new SafeResponseContextExtractor();
+        $extractor = new SafeResponseContext();
         $context = $extractor($response);
 
         $reflection = new ReflectionObject($extractor);
@@ -39,6 +38,7 @@ class SafeResponseContextExtractorTest extends TestCase
         return [
             'psr response' => [$this->createPsrResponse()],
             'laravel response' => [$this->createLaravelResponse()],
+            'string response' => [$this->createStringResponse()],
         ];
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\Http\RequestLogging\Context;
 
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class SafeResponseContextExtractor extends ResponseContextExtractor
+class SafeResponseContext extends ResponseContext
 {
     protected $headers = ['set-cookie'];
     protected $replacement = '***';

@@ -27,4 +27,9 @@ trait CreatesResponses
             ]
         );
     }
+
+    protected function createStringResponse(): string
+    {
+        return 'body';
+    }
 }

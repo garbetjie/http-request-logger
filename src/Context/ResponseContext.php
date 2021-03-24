@@ -1,20 +1,22 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\Http\RequestLogging\Context;
 
 use GuzzleHttp\Promise\PromiseInterface;
-use Psr\Http\Message\RequestInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Response;
 use function base64_encode;
+use function Garbetjie\Http\RequestLogging\normalize_headers;
 use function get_class;
+use function http_response_code;
+use function is_string;
 use function sprintf;
+use function stripos;
 use function strlen;
 use function substr;
 
-class ResponseContextExtractor
+class ResponseContext
 {
     private $maxBodyLength;
 
@@ -24,7 +26,7 @@ class ResponseContextExtractor
     }
 
     /**
-     * @param ResponseInterface|Response $response
+     * @param ResponseInterface|Response|string $response
      * @throws InvalidArgumentException
      *
      * @return array
@@ -41,9 +43,39 @@ class ResponseContextExtractor
             case $response instanceof PromiseInterface:
                 return $this->extractResponsePromise($response);
 
+            case is_string($response):
+                return $this->extractResponseString($response);
+
             default:
                 throw new InvalidArgumentException(sprintf('Unknown response instance "%s" provided.', get_class($response)));
         }
+    }
+
+    /**
+     * @param string $response
+     * @return array
+     */
+    protected function extractResponseString(string $response): array
+    {
+        $headers = [];
+
+        foreach (headers_list() as $line) {
+            if (stripos($line, ':') === false) {
+                $name = $line;
+                $value = '';
+            } else {
+                [$name, $value] = explode(':', $line);
+            }
+
+            $headers[$name][] = ltrim($value);
+        }
+
+        return [
+            'status_code' => http_response_code(),
+            'body_length' => strlen($response),
+            'body' => base64_encode(substr($response, 0, $this->maxBodyLength)),
+            'headers' => normalize_headers($headers),
+        ];
     }
 
     /**
