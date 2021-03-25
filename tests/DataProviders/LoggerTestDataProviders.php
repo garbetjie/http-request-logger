@@ -80,6 +80,7 @@ class LoggerTestDataProviders
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'in', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
+
             [
                 $request = $this->createPsrServerRequest(), $response = $this->createPsrResponse(),
                 $requestExtractor, $responseExtractor,
@@ -94,6 +95,7 @@ class LoggerTestDataProviders
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'in', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
+
             [
                 $request = $this->createPsrRequest(), $response = $this->createPsrResponse(),
                 $requestExtractor, $responseExtractor,
@@ -107,6 +109,21 @@ class LoggerTestDataProviders
                 Logger::DIRECTION_OUT,
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'in', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
+            ],
+
+            [
+                $request = $this->createStringRequest(), $response = $this->createStringResponse(),
+                $requestExtractor, $responseExtractor,
+                Logger::DIRECTION_IN,
+                ['what' => 'request', 'direction' => 'in', 'request' => $request],
+                ['what' => 'response', 'direction' => 'out', 'request' => $request, 'response' => $response]
+            ],
+            [
+                $request = $this->createStringRequest(), $response = $this->createStringResponse(),
+                $requestExtractor, $responseExtractor,
+                Logger::DIRECTION_OUT,
+                ['what' => 'request', 'direction' => 'out', 'request' => $request],
+                ['what' => 'response', 'direction' => 'in', 'request' => $request, 'response' => $response]
             ],
         ];
     }
