@@ -11,10 +11,7 @@ class SafeRequestContext extends RequestContext
     protected $replacement = '***';
 
     /**
-     * Extract context from a PSR-compliant request.
-     *
-     * @param RequestInterface $request
-     * @return array
+     * @inheritdoc
      */
     protected function contextFromPSR(RequestInterface $request): array
     {
@@ -22,10 +19,7 @@ class SafeRequestContext extends RequestContext
     }
 
     /**
-     * Extract context from a Symfony request (which includes Laravel requests).
-     *
-     * @param Request $request
-     * @return array
+     * @inheritdoc
      */
     protected function contextFromSymfony(Request $request): array
     {
@@ -33,6 +27,16 @@ class SafeRequestContext extends RequestContext
     }
 
     /**
+     * @inheritdoc
+     */
+    protected function contextFromString(string $request): array
+    {
+        return $this->makeSafe(parent::contextFromString($request));
+    }
+
+    /**
+     * Replaces potentially sensitive information in the given context.
+     *
      * @param array $context
      * @return array
      */
