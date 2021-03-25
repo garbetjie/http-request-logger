@@ -67,14 +67,14 @@ class LoggerTestDataProviders
 
         return [
             [
-                $request = $this->createLaravelRequest(), $response = $this->createLaravelResponse(),
+                $request = $this->createSymfonyRequest(), $response = $this->createSymfonyResponse(),
                 $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_IN,
                 ['what' => 'request', 'direction' => 'in', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'out', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
             [
-                $request = $this->createLaravelRequest(), $response = $this->createLaravelResponse(),
+                $request = $this->createSymfonyRequest(), $response = $this->createSymfonyResponse(),
                 $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_OUT,
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
@@ -114,14 +114,17 @@ class LoggerTestDataProviders
     public function requestsAndResponsesAreLoggedCorrectly(): array
     {
         return [
-            [$this->createLaravelRequest(), $this->createLaravelResponse(), Logger::DIRECTION_IN],
-            [$this->createLaravelRequest(), $this->createLaravelResponse(), Logger::DIRECTION_OUT],
+            [$this->createSymfonyRequest(), $this->createSymfonyResponse(), Logger::DIRECTION_IN],
+            [$this->createSymfonyRequest(), $this->createSymfonyResponse(), Logger::DIRECTION_OUT],
 
             [$this->createPsrServerRequest(), $this->createPsrResponse(), Logger::DIRECTION_IN],
             [$this->createPsrServerRequest(), $this->createPsrResponse(), Logger::DIRECTION_OUT],
 
             [$this->createPsrRequest(), $this->createPsrResponse(), Logger::DIRECTION_IN],
             [$this->createPsrRequest(), $this->createPsrResponse(), Logger::DIRECTION_OUT],
+
+            [$this->createStringRequest(), $this->createStringResponse(), Logger::DIRECTION_IN],
+            [$this->createStringRequest(), $this->createStringResponse(), Logger::DIRECTION_OUT],
         ];
     }
 }
