@@ -12,7 +12,7 @@ trait CreatesResponses
         return new PsrResponse(
             200,
             [
-                'Content-Type' => 'custom',
+                'Content-Type' => 'application/json',
                 'Set-Cookie' => 'key=value',
                 'Authorization' => 'Bearer 123',
             ],
@@ -26,7 +26,7 @@ trait CreatesResponses
             'body',
             200,
             [
-                'Content-Type' => 'custom',
+                'Content-Type' => 'application/json',
                 'Set-Cookie' => 'key=value',
                 'Authorization' => 'Bearer 456',
             ]
@@ -35,6 +35,11 @@ trait CreatesResponses
 
     protected function createStringResponse(): string
     {
+        header_remove();
+        header('Content-Type: custom');
+        header('Set-Cookie: key=value');
+        header('Authorization: Bearer 789');
+
         return 'body';
     }
 }

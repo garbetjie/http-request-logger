@@ -17,7 +17,7 @@ trait CreatesRequests
                 'HTTP_CONTENT_TYPE' => 'application/json',
                 'HTTP_HOST' => 'example.org',
                 'HTTP_COOKIE' => 'key=value',
-                'HTTP_AUTHORIZATION' => 'Bearer {{token}}',
+                'HTTP_AUTHORIZATION' => 'Bearer 123',
             ],
             'body'
         );
@@ -31,7 +31,7 @@ trait CreatesRequests
             [
                 'Content-Type' => 'application/json',
                 'Cookie' => 'key=value',
-                'Authorization' => 'Bearer {{token}}',
+                'Authorization' => 'Bearer 456',
             ],
             'body'
         );
@@ -45,7 +45,7 @@ trait CreatesRequests
             [
                 'Content-Type' => 'application/json',
                 'Cookie' => 'key=value',
-                'Authorization' => 'Bearer {{token}}',
+                'Authorization' => 'Bearer 789',
             ],
             'body'
         );
@@ -53,6 +53,11 @@ trait CreatesRequests
 
     protected function createStringRequest(): string
     {
+        header_remove();
+        header('Authorization: Bearer 0ab');
+        header('Content-Type: application/json');
+        header('Cookie: key=value');
+
         return 'body';
     }
 }

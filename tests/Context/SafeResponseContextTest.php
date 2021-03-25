@@ -28,8 +28,6 @@ class SafeResponseContextTest extends TestCase
 
     public function testStringResponseValuesAreMasked()
     {
-        header('Set-Cookie: cow=moo');
-
         $this->assertHeadersAreMasked($this->createStringResponse());
     }
 

@@ -11,11 +11,32 @@ class SafeRequestContextTest extends TestCase
 {
     use CreatesRequests;
 
-    /**
-     * @dataProvider requestProvider
-     * @param $request
-     */
-    public function testHeadersAreMasked($request)
+    public function testIsCallable()
+    {
+        $this->assertIsCallable(new SafeRequestContext());
+    }
+
+    public function testIncomingPsrRequestIsMasked()
+    {
+        $this->assertHeadersAreMasked($this->createPsrServerRequest());
+    }
+
+    public function testOutgoingPsrRequestIsMasked()
+    {
+        $this->assertHeadersAreMasked($this->createPsrRequest());
+    }
+
+    public function testIncomingSymfonyRequestIsMasked()
+    {
+        $this->assertHeadersAreMasked($this->createLaravelRequest());
+    }
+
+    public function testIncomingStringRequestIsMasked()
+    {
+        $this->assertHeadersAreMasked($this->createStringRequest());
+    }
+
+    protected function assertHeadersAreMasked($request)
     {
         $extractor = new SafeRequestContext();
         $context = $extractor($request);
@@ -31,15 +52,5 @@ class SafeRequestContextTest extends TestCase
             $this->assertArrayHasKey($header, $context['headers']);
             $this->assertEquals($replacementProp->getValue($extractor), $context['headers'][$header]);
         }
-    }
-
-    public function requestProvider()
-    {
-        return [
-            'incoming guzzle/psr server request' => [$this->createPsrServerRequest()],
-            'outgoing guzzle/psr request' => [$this->createPsrRequest()],
-            'incoming laravel server request' => [$this->createLaravelRequest()],
-            'incoming string request' => [$this->createStringRequest()],
-        ];
     }
 }
