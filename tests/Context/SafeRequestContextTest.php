@@ -28,7 +28,7 @@ class SafeRequestContextTest extends TestCase
 
     public function testIncomingSymfonyRequestIsMasked()
     {
-        $this->assertHeadersAreMasked($this->createLaravelRequest());
+        $this->assertHeadersAreMasked($this->createSymfonyRequest());
     }
 
     public function testIncomingStringRequestIsMasked()

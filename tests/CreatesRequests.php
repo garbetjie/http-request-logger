@@ -2,32 +2,34 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
+use GuzzleHttp\Psr7\Request as PsrRequest;
+use GuzzleHttp\Psr7\ServerRequest as PsrServerRequest;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+
 trait CreatesRequests
 {
-    protected function createLaravelRequest()
+    protected function createSymfonyRequest(): SymfonyRequest
     {
-        return new \Illuminate\Http\Request(
-            [],
-            [],
+        return SymfonyRequest::create(
+            'https://example.org/path?q=1',
+            'GET',
             [],
             [],
             [],
             [
-                'REQUEST_METHOD' => 'GET',
-                'HTTP_CONTENT_TYPE' => 'application/json',
-                'HTTP_HOST' => 'example.org',
-                'HTTP_COOKIE' => 'key=value',
                 'HTTP_AUTHORIZATION' => 'Bearer 123',
+                'HTTP_CONTENT_TYPE' => 'application/json',
+                'HTTP_COOKIE' => 'key=value',
             ],
             'body'
         );
     }
 
-    protected function createPsrServerRequest()
+    protected function createPsrServerRequest(): PsrServerRequest
     {
-        return new \GuzzleHttp\Psr7\ServerRequest(
+        return new PsrServerRequest(
             'GET',
-            'https://example.org',
+            'https://example.org/path?q=1',
             [
                 'Content-Type' => 'application/json',
                 'Cookie' => 'key=value',
@@ -37,11 +39,11 @@ trait CreatesRequests
         );
     }
 
-    protected function createPsrRequest()
+    protected function createPsrRequest(): PsrRequest
     {
-        return new \GuzzleHttp\Psr7\Request(
+        return new PsrRequest(
             'GET',
-            'https://example.org',
+            'https://example.org/path?q=1',
             [
                 'Content-Type' => 'application/json',
                 'Cookie' => 'key=value',
@@ -51,12 +53,20 @@ trait CreatesRequests
         );
     }
 
-    protected function createStringRequest(): string
+    protected function createStringRequest(bool $https = true): string
     {
-        header_remove();
-        header('Authorization: Bearer 0ab');
-        header('Content-Type: application/json');
-        header('Cookie: key=value');
+        $_SERVER['REQUEST_URI'] = '/path?q=1';
+        $_SERVER['HTTP_HOST'] = 'example.org';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer 0ab';
+        $_SERVER['HTTP_CONTENT_TYPE'] = 'application/json';
+        $_SERVER['HTTP_COOKIE'] = 'key=value';
+
+        if ($https) {
+            $_SERVER['HTTPS'] = 'on';
+        } else {
+            unset($_SERVER['HTTPS']);
+        }
 
         return 'body';
     }

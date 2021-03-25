@@ -23,6 +23,7 @@ class RequestContextTest extends TestCase
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
+        $this->assertEquals('https://example.org/path?q=1', $context['url']);
     }
 
     public function testOutgoingPsrRequest()
@@ -31,56 +32,45 @@ class RequestContextTest extends TestCase
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
+        $this->assertEquals('https://example.org/path?q=1', $context['url']);
     }
 
-    public function testIncomingLaravelRequest()
+    public function testIncomingSymfonyRequest()
     {
-        $context = (new RequestContext())->__invoke($this->createLaravelRequest());
+        $context = (new RequestContext())->__invoke($this->createSymfonyRequest());
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
+        $this->assertEquals('https://example.org/path?q=1', $context['url']);
     }
 
     public function testIncomingStringRequestWithHttps()
     {
-        $_SERVER['HTTPS'] = 'on';
-        $_SERVER['REQUEST_URI'] = '/?cow=moo';
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['HTTP_HOST'] = 'localhost';
-        $_SERVER['HTTP_CUSTOM_HEADER'] = 'cow';
-
         $context = (new RequestContext())->__invoke($this->createStringRequest());
 
         $this->assertContextHasRequiredKeys($context);
-        $this->assertContextMatches($context, 'GET', 'body', ['host', 'custom-header']);
-        $this->assertEquals('https://localhost/?cow=moo', $context['url']);
+        $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
+        $this->assertEquals('https://example.org/path?q=1', $context['url']);
     }
 
     public function testIncomingStringRequestWithoutHttps()
     {
-        $_SERVER['REQUEST_URI'] = '/?cow=moo';
-        $_SERVER['REQUEST_METHOD'] = 'POST';
-        $_SERVER['HTTP_HOST'] = 'localhost';
-        $_SERVER['HTTP_CUSTOM_HEADER'] = 'cow';
-        unset($_SERVER['HTTPS']);
-
-        $context = (new RequestContext())->__invoke($this->createStringRequest());
+        $context = (new RequestContext())->__invoke($this->createStringRequest(false));
 
         $this->assertContextHasRequiredKeys($context);
-        $this->assertContextMatches($context, 'POST', 'body', ['host', 'custom-header']);
-        $this->assertEquals('http://localhost/?cow=moo', $context['url']);
+        $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
+        $this->assertEquals('http://example.org/path?q=1', $context['url']);
     }
 
     public function testIncomingStringRequestWithoutCorrectEnvironmentVariables()
     {
-        $_SERVER['REQUEST_URI'] = '/';
-        $_SERVER['HTTP_CUSTOM_HEADER'] = 'cow';
+        $request = $this->createStringRequest();
         unset($_SERVER['HTTPS'], $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_METHOD']);
 
-        $context = (new RequestContext())->__invoke($this->createStringRequest());
+        $context = (new RequestContext())->__invoke($request);
 
         $this->assertContextHasRequiredKeys($context);
-        $this->assertContextMatches($context, null, 'body', ['custom-header']);
+        $this->assertContextMatches($context, null, 'body', ['content-type']);
         $this->assertNull($context['url']);
     }
 

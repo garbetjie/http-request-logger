@@ -27,27 +27,23 @@ class ResponseContextTest extends TestCase
         $context = (new ResponseContext())->__invoke($this->createPsrResponse());
 
         $this->assertContextHasRequiredKeys($context);
-        $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie']);
+        $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
     }
 
-    public function testLaravelResponse()
+    public function testSymfonyResponse()
     {
         $context = (new ResponseContext())->__invoke($this->createSymfonyResponse());
 
         $this->assertContextHasRequiredKeys($context);
-        $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie']);
+        $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
     }
 
     public function testStringResponse()
     {
-        header('Content-Type: application/json');
-        header('Cow: moo');
-        header('Set-Cookie: cookie=munch');
-
         $context = (new ResponseContext())->__invoke($this->createStringResponse());
 
         $this->assertContextHasRequiredKeys($context);
-        $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'cow']);
+        $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
     }
 
     protected function assertContextHasRequiredKeys(array $context)
