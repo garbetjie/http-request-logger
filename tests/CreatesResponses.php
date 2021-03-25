@@ -2,28 +2,33 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
+use GuzzleHttp\Psr7\Response as PsrResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+
 trait CreatesResponses
 {
-    protected function createPsrResponse()
+    protected function createPsrResponse(): PsrResponse
     {
-        return new \GuzzleHttp\Psr7\Response(
+        return new PsrResponse(
             200,
             [
                 'Content-Type' => 'custom',
                 'Set-Cookie' => 'key=value',
+                'Authorization' => 'Bearer 123',
             ],
             'body'
         );
     }
 
-    protected function createLaravelResponse()
+    protected function createSymfonyResponse(): SymfonyResponse
     {
-        return new \Illuminate\Http\Response(
+        return new SymfonyResponse(
             'body',
             200,
             [
                 'Content-Type' => 'custom',
                 'Set-Cookie' => 'key=value',
+                'Authorization' => 'Bearer 456',
             ]
         );
     }

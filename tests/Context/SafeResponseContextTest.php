@@ -11,11 +11,29 @@ class SafeResponseContextTest extends TestCase
 {
     use CreatesResponses;
 
-    /**
-     * @dataProvider responseProvider
-     * @param $response
-     */
-    public function testHeadersAreMasked($response)
+    public function testIsCallable()
+    {
+        $this->assertIsCallable(new SafeResponseContext());
+    }
+
+    public function testSymfonyResponseValuesAreMasked()
+    {
+        $this->assertHeadersAreMasked($this->createSymfonyResponse());
+    }
+
+    public function testPsrResponseValuesAreMasked()
+    {
+        $this->assertHeadersAreMasked($this->createPsrResponse());
+    }
+
+    public function testStringResponseValuesAreMasked()
+    {
+        header('Set-Cookie: cow=moo');
+
+        $this->assertHeadersAreMasked($this->createStringResponse());
+    }
+
+    protected function assertHeadersAreMasked($response)
     {
         $extractor = new SafeResponseContext();
         $context = $extractor($response);
@@ -31,14 +49,5 @@ class SafeResponseContextTest extends TestCase
             $this->assertArrayHasKey($header, $context['headers']);
             $this->assertEquals($replacementProp->getValue($extractor), $context['headers'][$header]);
         }
-    }
-
-    public function responseProvider()
-    {
-        return [
-            'psr response' => [$this->createPsrResponse()],
-            'laravel response' => [$this->createLaravelResponse()],
-            'string response' => [$this->createStringResponse()],
-        ];
     }
 }
