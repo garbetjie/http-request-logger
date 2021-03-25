@@ -40,8 +40,8 @@ class LoggerTest extends TestCase
             }
         );
 
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
+        $request = $this->createSymfonyRequest();
+        $response = $this->createSymfonyResponse();
 
         // Log the request and response.
         $this->logger->response(
@@ -70,8 +70,8 @@ class LoggerTest extends TestCase
             }
         );
 
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
+        $request = $this->createSymfonyRequest();
+        $response = $this->createSymfonyResponse();
 
         $this->logger->response(
             $request,
@@ -81,6 +81,7 @@ class LoggerTest extends TestCase
 
         $this->assertCount(2, $this->handler->logs());
         $this->assertArrayHasKey('message', $this->handler->logs(0));
+        $this->assertArrayHasKey('message', $this->handler->logs(1));
         $this->assertEquals("request:in:{$message}", $this->handler->logs(0)['message']);
         $this->assertEquals("response:out:{$message}", $this->handler->logs(1)['message']);
     }
@@ -96,7 +97,7 @@ class LoggerTest extends TestCase
      * @param $expectedRequestContext
      * @param $expectedResponseContext
      */
-    public function testExtractorsCanBeCustomised(
+    public function testContextExtractorsCanBeCustomised(
         $request,
         $response,
         $requestExtractor,
@@ -105,7 +106,7 @@ class LoggerTest extends TestCase
         $expectedRequestContext,
         $expectedResponseContext
     ) {
-        $this->logger->extractors($requestExtractor, $responseExtractor);
+        $this->logger->context($requestExtractor, $responseExtractor);
 
         $this->logger->response(
             $request,
@@ -136,8 +137,8 @@ class LoggerTest extends TestCase
      */
     public function testRequestsAndResponsesCanBeToggled($requestToggle, $responseToggle, string $direction, int $expectedCount)
     {
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
+        $request = $this->createSymfonyRequest();
+        $response = $this->createSymfonyResponse();
 
         $this->logger->enabled($requestToggle, $responseToggle);
 
