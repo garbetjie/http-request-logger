@@ -4,13 +4,16 @@ namespace Garbetjie\Http\RequestLogging\Tests;
 
 use Garbetjie\Http\RequestLogging\LoggedRequest;
 use Garbetjie\Http\RequestLogging\Logger;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use function array_column;
 use function base64_encode;
+use function func_get_args;
 use function is_string;
 use function random_bytes;
 use function spl_object_hash;
@@ -28,11 +31,6 @@ class LoggerTest extends TestCase
      * @var ArrayMonologHandler
      */
     protected $handler;
-
-    // test that custom id() value is used.
-    // test that custom context() value is used.
-    // test that custom message() value is used.
-    // test that custom enabled() value is used.
 
     protected function setUp(): void
     {
@@ -196,7 +194,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestsAndResponsesAreLogged()
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response
@@ -213,5 +211,121 @@ class LoggerTest extends TestCase
         );
 
         $this->assertCount(2, $this->handler->logs());
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::messageCallableArguments()
+     *
+     * @param string $direction
+     */
+    public function testMessageCallableArguments(string $direction)
+    {
+        $this->logger->message(
+            function ($what, $direction) {
+                $this->assertContains($what, ['request', 'response']);
+                $this->assertContains($direction, [$this->logger::DIRECTION_IN, $this->logger::DIRECTION_OUT]);
+            }
+        );
+
+        $request = $this->createSymfonyRequest();
+        $response = $this->createSymfonyResponse();
+
+        $this->logger->response(
+            $request,
+            $response,
+            $this->logger->request($request, $direction)
+        );
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     *
+     * @param $request
+     * @param $response
+     * @param string $direction
+     */
+    public function testEnabledCallableArguments($request, $response, string $direction)
+    {
+        $this->logger->enabled(
+            function () {
+                $this->assertRequestCallableArguments(...func_get_args());
+            },
+            function () {
+                $this->assertResponseCallableArguments(...func_get_args());
+            }
+        );
+
+        $this->logger->response(
+            $request,
+            $response,
+            $this->logger->request($request, $direction)
+        );
+    }
+
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     *
+     * @param $request
+     * @param $response
+     * @param string $direction
+     */
+    public function testContextCallableArguments($request, $response, string $direction)
+    {
+        $this->logger->context(
+            function() {
+                $this->assertRequestCallableArguments(...func_get_args());
+
+                return [];
+            },
+            function() {
+                $this->assertResponseCallableArguments(...func_get_args());
+
+                return [];
+            }
+        );
+
+        $this->logger->response(
+            $request,
+            $response,
+            $this->logger->request($request, $direction)
+        );
+    }
+
+    protected function assertRequestCallableArguments($request, $direction)
+    {
+        $this->assertThat(
+            $request,
+            $this->logicalOr(
+                $this->isType('string'),
+                $this->isInstanceOf(RequestInterface::class),
+                $this->isInstanceOf(SymfonyRequest::class),
+            ),
+        );
+
+        $this->assertContains($direction, [$this->logger::DIRECTION_IN, $this->logger::DIRECTION_OUT]);
+    }
+
+    protected function assertResponseCallableArguments($response, $request, $direction)
+    {
+        $this->assertThat(
+            $response,
+            $this->logicalOr(
+                $this->isType('string'),
+                $this->isInstanceOf(ResponseInterface::class),
+                $this->isInstanceOf(SymfonyResponse::class),
+            )
+        );
+
+        $this->assertThat(
+            $request,
+            $this->logicalOr(
+                $this->isType('string'),
+                $this->isInstanceOf(RequestInterface::class),
+                $this->isInstanceOf(SymfonyRequest::class),
+            ),
+        );
+
+        $this->assertContains($direction, [$this->logger::DIRECTION_IN, $this->logger::DIRECTION_OUT]);
     }
 }

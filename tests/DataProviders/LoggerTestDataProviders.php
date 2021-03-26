@@ -150,7 +150,7 @@ class LoggerTestDataProviders
         ];
     }
 
-    public function requestsAndResponsesAreLogged(): array
+    public function requestResponseAndDirection(): array
     {
         return [
             [$this->createSymfonyRequest(), $this->createSymfonyResponse(), Logger::DIRECTION_IN],
@@ -164,6 +164,14 @@ class LoggerTestDataProviders
 
             [$this->createStringRequest(), $this->createStringResponse(), Logger::DIRECTION_IN],
             [$this->createStringRequest(), $this->createStringResponse(), Logger::DIRECTION_OUT],
+        ];
+    }
+
+    public function messageCallableArguments(): array
+    {
+        return [
+            [Logger::DIRECTION_IN],
+            [Logger::DIRECTION_OUT],
         ];
     }
 }
