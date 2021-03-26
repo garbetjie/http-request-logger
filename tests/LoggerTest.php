@@ -4,9 +4,9 @@ namespace Garbetjie\Http\RequestLogging\Tests;
 
 use Garbetjie\Http\RequestLogging\LoggedRequest;
 use Garbetjie\Http\RequestLogging\Logger;
+use Illuminate\Http\Request as LaravelRequest;
+use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -53,17 +53,17 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             LoggedRequest::class,
-            $this->logger->request($this->createSymfonyRequest(), Logger::DIRECTION_IN)
+            $this->logger->request($this->createLaravelRequest(), Logger::DIRECTION_IN)
         );
     }
 
     public function testReturnValueWhenLoggingResponse()
     {
-        $request = $this->createSymfonyRequest();
+        $request = $this->createLaravelRequest();
         $logged = $this->logger->request($request, Logger::DIRECTION_IN);
 
         $this->assertNull(
-            $this->logger->response($request, $this->createSymfonyResponse(), $logged)
+            $this->logger->response($request, $this->createLaravelResponse(), $logged)
         );
     }
 
@@ -77,8 +77,8 @@ class LoggerTest extends TestCase
             }
         );
 
-        $request = $this->createSymfonyRequest();
-        $response = $this->createSymfonyResponse();
+        $request = $this->createLaravelRequest();
+        $response = $this->createLaravelResponse();
 
         $this->logger->response(
             $request,
@@ -150,8 +150,8 @@ class LoggerTest extends TestCase
             }
         );
 
-        $request = $this->createSymfonyRequest();
-        $response = $this->createSymfonyResponse();
+        $request = $this->createLaravelRequest();
+        $response = $this->createLaravelResponse();
 
         $this->logger->response(
             $request,
@@ -177,8 +177,8 @@ class LoggerTest extends TestCase
      */
     public function testEnabledCanBeCustomised($requestToggle, $responseToggle, string $direction, callable $message, array $expectedMessages)
     {
-        $request = $this->createSymfonyRequest();
-        $response = $this->createSymfonyResponse();
+        $request = $this->createLaravelRequest();
+        $response = $this->createLaravelResponse();
 
         $this->logger->enabled($requestToggle, $responseToggle);
         $this->logger->message($message);
@@ -227,8 +227,8 @@ class LoggerTest extends TestCase
             }
         );
 
-        $request = $this->createSymfonyRequest();
-        $response = $this->createSymfonyResponse();
+        $request = $this->createLaravelRequest();
+        $response = $this->createLaravelResponse();
 
         $this->logger->response(
             $request,
@@ -299,7 +299,7 @@ class LoggerTest extends TestCase
             $this->logicalOr(
                 $this->isType('string'),
                 $this->isInstanceOf(RequestInterface::class),
-                $this->isInstanceOf(SymfonyRequest::class),
+                $this->isInstanceOf(LaravelRequest::class),
             ),
         );
 
@@ -313,7 +313,7 @@ class LoggerTest extends TestCase
             $this->logicalOr(
                 $this->isType('string'),
                 $this->isInstanceOf(ResponseInterface::class),
-                $this->isInstanceOf(SymfonyResponse::class),
+                $this->isInstanceOf(LaravelResponse::class),
             )
         );
 
@@ -322,7 +322,7 @@ class LoggerTest extends TestCase
             $this->logicalOr(
                 $this->isType('string'),
                 $this->isInstanceOf(RequestInterface::class),
-                $this->isInstanceOf(SymfonyRequest::class),
+                $this->isInstanceOf(LaravelRequest::class),
             ),
         );
 

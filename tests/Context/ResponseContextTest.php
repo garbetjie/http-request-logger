@@ -30,9 +30,9 @@ class ResponseContextTest extends TestCase
         $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
     }
 
-    public function testSymfonyResponse()
+    public function testLaravelResponse()
     {
-        $context = (new ResponseContext())->__invoke($this->createSymfonyResponse());
+        $context = (new ResponseContext())->__invoke($this->createLaravelResponse());
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);

@@ -16,9 +16,9 @@ class SafeResponseContextTest extends TestCase
         $this->assertIsCallable(new SafeResponseContext());
     }
 
-    public function testSymfonyResponseValuesAreMasked()
+    public function testLaravelResponseValuesAreMasked()
     {
-        $this->assertHeadersAreMasked($this->createSymfonyResponse());
+        $this->assertHeadersAreMasked($this->createLaravelResponse());
     }
 
     public function testPsrResponseValuesAreMasked()

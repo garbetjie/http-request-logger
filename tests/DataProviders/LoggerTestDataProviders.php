@@ -89,14 +89,14 @@ class LoggerTestDataProviders
 
         return [
             [
-                $request = $this->createSymfonyRequest(), $response = $this->createSymfonyResponse(),
+                $request = $this->createLaravelRequest(), $response = $this->createLaravelResponse(),
                 Logger::DIRECTION_IN,
                 $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'in', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'out', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
             [
-                $request = $this->createSymfonyRequest(), $response = $this->createSymfonyResponse(),
+                $request = $this->createLaravelRequest(), $response = $this->createLaravelResponse(),
                 Logger::DIRECTION_OUT,
                 $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
@@ -153,8 +153,8 @@ class LoggerTestDataProviders
     public function requestResponseAndDirection(): array
     {
         return [
-            [$this->createSymfonyRequest(), $this->createSymfonyResponse(), Logger::DIRECTION_IN],
-            [$this->createSymfonyRequest(), $this->createSymfonyResponse(), Logger::DIRECTION_OUT],
+            [$this->createLaravelRequest(), $this->createLaravelResponse(), Logger::DIRECTION_IN],
+            [$this->createLaravelRequest(), $this->createLaravelResponse(), Logger::DIRECTION_OUT],
 
             [$this->createPsrServerRequest(), $this->createPsrResponse(), Logger::DIRECTION_IN],
             [$this->createPsrServerRequest(), $this->createPsrResponse(), Logger::DIRECTION_OUT],

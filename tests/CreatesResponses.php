@@ -3,7 +3,7 @@
 namespace Garbetjie\Http\RequestLogging\Tests;
 
 use GuzzleHttp\Psr7\Response as PsrResponse;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Illuminate\Http\Response as LaravelResponse;
 
 trait CreatesResponses
 {
@@ -20,9 +20,9 @@ trait CreatesResponses
         );
     }
 
-    protected function createSymfonyResponse(): SymfonyResponse
+    protected function createLaravelResponse(): LaravelResponse
     {
-        return new SymfonyResponse(
+        return new LaravelResponse(
             'body',
             200,
             [

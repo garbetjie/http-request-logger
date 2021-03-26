@@ -2,9 +2,6 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
-use Symfony\Component\HttpFoundation\ParameterBag;
-use function stripos;
-
 class HeaderBag
 {
     protected static $headers = [];

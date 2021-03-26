@@ -35,9 +35,9 @@ class RequestContextTest extends TestCase
         $this->assertEquals('https://example.org/path?q=1', $context['url']);
     }
 
-    public function testIncomingSymfonyRequest()
+    public function testIncomingLaravelRequest()
     {
-        $context = (new RequestContext())->__invoke($this->createSymfonyRequest());
+        $context = (new RequestContext())->__invoke($this->createLaravelRequest());
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);

@@ -4,13 +4,13 @@ namespace Garbetjie\Http\RequestLogging\Tests;
 
 use GuzzleHttp\Psr7\Request as PsrRequest;
 use GuzzleHttp\Psr7\ServerRequest as PsrServerRequest;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Illuminate\Http\Request as LaravelRequest;
 
 trait CreatesRequests
 {
-    protected function createSymfonyRequest(): SymfonyRequest
+    protected function createLaravelRequest(): LaravelRequest
     {
-        return SymfonyRequest::create(
+        return LaravelRequest::create(
             'https://example.org/path?q=1',
             'GET',
             [],
