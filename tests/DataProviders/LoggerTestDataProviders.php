@@ -13,7 +13,25 @@ class LoggerTestDataProviders
     use CreatesRequests;
     use CreatesResponses;
 
-    public function requestsAndResponsesCanBeToggled(): array
+    public function returnValueWhenCustomising(): array
+    {
+        return [
+            'id' => ['id', [function() { }]],
+            'context' => ['context', [null, null]],
+            'message' => ['message', [function() { }]],
+            'enabled' => ['enabled', [true, true]]
+        ];
+    }
+
+    public function messageCanBeCustomised(): array
+    {
+        return [
+            'incoming request' => [Logger::DIRECTION_IN, 'request:in', 'response:out'],
+            'outgoing request' => [Logger::DIRECTION_OUT, 'request:out', 'response:in'],
+        ];
+    }
+
+    public function enabledCanBeCustomised(): array
     {
         $fnTrue = function() {
             return true;
@@ -23,30 +41,34 @@ class LoggerTestDataProviders
             return false;
         };
 
+        $message = function(string $what, string $direction) {
+            return "{$what}:{$direction}";
+        };
+
         return [
-            [true, true, Logger::DIRECTION_IN, 2],
-            [true, false, Logger::DIRECTION_IN, 1],
-            [false, true, Logger::DIRECTION_IN, 1],
-            [false, false, Logger::DIRECTION_IN, 0],
+            [true, true, Logger::DIRECTION_IN, $message, ['request:in', 'response:out']],
+            [true, false, Logger::DIRECTION_IN, $message, ['request:in']],
+            [false, true, Logger::DIRECTION_IN, $message, ['response:out']],
+            [false, false, Logger::DIRECTION_IN, $message, []],
 
-            [true, true, Logger::DIRECTION_OUT, 2],
-            [true, false, Logger::DIRECTION_OUT, 1],
-            [false, true, Logger::DIRECTION_OUT, 1],
-            [false, false, Logger::DIRECTION_OUT, 0],
+            [true, true, Logger::DIRECTION_OUT, $message, ['request:out', 'response:in']],
+            [true, false, Logger::DIRECTION_OUT, $message, ['request:out']],
+            [false, true, Logger::DIRECTION_OUT, $message, ['response:in']],
+            [false, false, Logger::DIRECTION_OUT, $message, []],
 
-            [$fnTrue, $fnTrue, Logger::DIRECTION_IN, 2],
-            [$fnTrue, $fnFalse, Logger::DIRECTION_IN, 1],
-            [$fnFalse, $fnTrue, Logger::DIRECTION_IN, 1],
-            [$fnFalse, $fnFalse, Logger::DIRECTION_IN, 0],
+            [$fnTrue, $fnTrue, Logger::DIRECTION_IN, $message, ['request:in', 'response:out']],
+            [$fnTrue, $fnFalse, Logger::DIRECTION_IN, $message, ['request:in']],
+            [$fnFalse, $fnTrue, Logger::DIRECTION_IN, $message, ['response:out']],
+            [$fnFalse, $fnFalse, Logger::DIRECTION_IN, $message, []],
 
-            [$fnTrue, $fnTrue, Logger::DIRECTION_OUT, 2],
-            [$fnTrue, $fnFalse, Logger::DIRECTION_OUT, 1],
-            [$fnFalse, $fnTrue, Logger::DIRECTION_OUT, 1],
-            [$fnFalse, $fnFalse, Logger::DIRECTION_OUT, 0],
+            [$fnTrue, $fnTrue, Logger::DIRECTION_OUT, $message, ['request:out', 'response:in']],
+            [$fnTrue, $fnFalse, Logger::DIRECTION_OUT, $message, ['request:out']],
+            [$fnFalse, $fnTrue, Logger::DIRECTION_OUT, $message, ['response:in']],
+            [$fnFalse, $fnFalse, Logger::DIRECTION_OUT, $message, []],
         ];
     }
 
-    public function extractorsCanBeCustomised(): array
+    public function contextCanBeCustomised(): array
     {
         $requestExtractor = function($request, $direction) {
             return [
@@ -68,60 +90,60 @@ class LoggerTestDataProviders
         return [
             [
                 $request = $this->createSymfonyRequest(), $response = $this->createSymfonyResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_IN,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'in', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'out', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
             [
                 $request = $this->createSymfonyRequest(), $response = $this->createSymfonyResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_OUT,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'in', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
 
             [
                 $request = $this->createPsrServerRequest(), $response = $this->createPsrResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_IN,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'in', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'out', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
             [
                 $request = $this->createPsrServerRequest(), $response = $this->createPsrResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_OUT,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'in', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
 
             [
                 $request = $this->createPsrRequest(), $response = $this->createPsrResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_IN,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'in', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'out', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
             [
                 $request = $this->createPsrRequest(), $response = $this->createPsrResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_OUT,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'out', 'request' => spl_object_hash($request)],
                 ['what' => 'response', 'direction' => 'in', 'request' => spl_object_hash($request), 'response' => spl_object_hash($response)]
             ],
 
             [
                 $request = $this->createStringRequest(), $response = $this->createStringResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_IN,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'in', 'request' => $request],
                 ['what' => 'response', 'direction' => 'out', 'request' => $request, 'response' => $response]
             ],
             [
                 $request = $this->createStringRequest(), $response = $this->createStringResponse(),
-                $requestExtractor, $responseExtractor,
                 Logger::DIRECTION_OUT,
+                $requestExtractor, $responseExtractor,
                 ['what' => 'request', 'direction' => 'out', 'request' => $request],
                 ['what' => 'response', 'direction' => 'in', 'request' => $request, 'response' => $response]
             ],
