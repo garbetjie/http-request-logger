@@ -2,8 +2,10 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Illuminate\Http\Request as LaravelRequest;
-use Illuminate\Http\Response as LaravelResponse;
+use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
+use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,7 +30,7 @@ class Logger
     /**
      * @var callable[]
      */
-    protected $extractors = [];
+    protected $context = [];
 
     /**
      * @var callable[]
@@ -60,7 +62,7 @@ class Logger
         $this->level = $level;
 
         // Set default extractors.
-        $this->extractors(new SafeRequestContextExtractor(), new SafeResponseContextExtractor());
+        $this->context(new SafeRequestContext(), new SafeResponseContext());
 
         // Set default message handler.
         $this->message(
@@ -85,34 +87,64 @@ class Logger
         );
     }
 
-    public function id(callable $handler)
+    /**
+     * Set the callable used to generate an ID to link requests & responses together.
+     *
+     * @param callable $handler
+     *
+     * @return $this
+     */
+    public function id(callable $handler): Logger
     {
         $this->id = $handler;
+
+        return $this;
     }
 
-    public function message(callable $handler)
+    /**
+     * Set the function used to generate the log message.
+     *
+     * @param callable $handler
+     *
+     * @return $this
+     */
+    public function message(callable $handler): Logger
     {
         $this->message = $handler;
+
+        return $this;
     }
 
-    public function extractors(?callable $request, ?callable $response): Logger
+    /**
+     * Set the functions to use to extract context for each request/response.
+     *
+     * @param callable|null $request
+     * @param callable|null $response
+     *
+     * @return $this
+     */
+    public function context(?callable $request, ?callable $response): Logger
     {
         if ($request !== null) {
-            $this->extractors['requests'] = $request;
+            $this->context['requests'] = $request;
         }
 
         if ($response !== null) {
-            $this->extractors['responses'] = $response;
+            $this->context['responses'] = $response;
         }
 
         return $this;
     }
 
     /**
+     * Set the function to use to determine whether a request or response should be logged.
+     *
      * @param null|bool|callable $requests
      * @param null|bool|callable $responses
+     *
+     * @return $this
      */
-    public function enabled($requests, $responses)
+    public function enabled($requests, $responses): Logger
     {
         // Determine whether requests are enabled.
         if ($requests !== null) {
@@ -127,10 +159,12 @@ class Logger
                 ? $responses
                 : function() use ($responses) { return (bool)$responses; };
         }
+
+        return $this;
     }
 
     /**
-     * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
+     * @param RequestInterface|SymfonyRequest|ServerRequestInterface|string $request
      * @param string $direction
      *
      * @return LoggedRequest
@@ -142,7 +176,7 @@ class Logger
         $message = call_user_func($this->message, __FUNCTION__, $direction);
 
         if (call_user_func($this->enabled['requests'], $request, $direction)) {
-            $context = call_user_func($this->extractors['requests'], $request, $direction);
+            $context = call_user_func($this->context['requests'], $request, $direction) ?: [];
             $this->logger->log($this->level, $message, ['id' => $id] + $context);
         }
 
@@ -150,18 +184,20 @@ class Logger
     }
 
     /**
-     * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
-     * @param ResponseInterface|LaravelResponse|string $response
+     * @param RequestInterface|SymfonyRequest|ServerRequestInterface|string $request
+     * @param ResponseInterface|SymfonyResponse|string $response
      * @param LoggedRequest $entry
+     *
+     * @return void
      */
-    public function response($request, $response, LoggedRequest $entry)
+    public function response($request, $response, LoggedRequest $entry): void
     {
         $direction = $entry->direction() === 'in' ? 'out' : 'in';
         $message = call_user_func($this->message, __FUNCTION__, $direction);
         $duration = microtime(true) - $entry->started();
 
         if (call_user_func($this->enabled['responses'], $response, $request, $direction)) {
-            $context = call_user_func($this->extractors['responses'], $response, $request, $direction);
+            $context = call_user_func($this->context['responses'], $response, $request, $direction) ?: [];
             $this->logger->log($this->level, $message, ['id' => $entry->id(), 'duration' => $duration] + $context);
         }
     }
