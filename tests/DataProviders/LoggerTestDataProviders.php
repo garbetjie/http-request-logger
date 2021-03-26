@@ -150,7 +150,7 @@ class LoggerTestDataProviders
         ];
     }
 
-    public function requestsAndResponsesAreLoggedCorrectly(): array
+    public function requestsAndResponsesAreLogged(): array
     {
         return [
             [$this->createSymfonyRequest(), $this->createSymfonyResponse(), Logger::DIRECTION_IN],

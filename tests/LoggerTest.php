@@ -196,13 +196,13 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestsAndResponsesAreLoggedCorrectly()
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestsAndResponsesAreLogged()
      *
      * @param $request
      * @param $response
      * @param string $direction
      */
-    public function testRequestsAndResponsesAreLoggedCorrectly($request, $response, string $direction)
+    public function testRequestsAndResponsesAreLogged($request, $response, string $direction)
     {
         $this->logger->enabled(true, true);
 
