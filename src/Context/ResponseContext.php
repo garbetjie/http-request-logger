@@ -3,9 +3,9 @@
 namespace Garbetjie\Http\RequestLogging\Context;
 
 use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Response as LaravelResponse;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 use function base64_encode;
 use function Garbetjie\Http\RequestLogging\normalize_headers;
 use function get_class;
@@ -26,7 +26,7 @@ class ResponseContext
     }
 
     /**
-     * @param ResponseInterface|Response|string $response
+     * @param ResponseInterface|LaravelResponse|string $response
      * @throws InvalidArgumentException
      *
      * @return array
@@ -37,8 +37,8 @@ class ResponseContext
             case $response instanceof ResponseInterface:
                 return $this->contextFromPSR($response);
 
-            case $response instanceof Response:
-                return $this->contextFromSymfony($response);
+            case $response instanceof LaravelResponse:
+                return $this->contextFromLaravel($response);
 
             case $response instanceof PromiseInterface:
                 return $this->contextFromPromise($response);
@@ -115,17 +115,17 @@ class ResponseContext
     }
 
     /**
-     * Extract context from a Symfony response (which includes Laravel responses).
+     * Extract context from a Laravel response.
      *
-     * @param Response $response
+     * @param LaravelResponse $response
      * @return array
      */
-    protected function contextFromSymfony(Response $response): array
+    protected function contextFromLaravel(LaravelResponse $response): array
     {
         $body = $response->getContent();
 
         return [
-            'status_code' => $response->getStatusCode(),
+            'status_code' => $response->status(),
             'body_length' => strlen($body),
             'body' => base64_encode(substr($body, 0, $this->maxBodyLength)),
             'headers' => normalize_headers($response->headers->all()),

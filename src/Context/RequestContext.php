@@ -2,10 +2,10 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
+use Illuminate\Http\Request as LaravelRequest;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Component\HttpFoundation\Request;
 use function base64_encode;
 use function Garbetjie\Http\RequestLogging\normalize_headers;
 use function get_class;
@@ -25,15 +25,15 @@ class RequestContext
     }
 
     /**
-     * @param RequestInterface|Request|string $request
+     * @param RequestInterface|LaravelRequest|string $request
      * @return array
      * @throws InvalidArgumentException
      */
     public function __invoke($request): array
     {
         switch (true) {
-            case $request instanceof Request:
-                return $this->contextFromSymfony($request);
+            case $request instanceof LaravelRequest:
+                return $this->contextFromLaravel($request);
 
             case $request instanceof ServerRequestInterface:
             case $request instanceof RequestInterface:
@@ -107,18 +107,18 @@ class RequestContext
     }
 
     /**
-     * Extract context from a Symfony request (which includes Laravel requests).
+     * Extract context from a Laravel request.
      *
-     * @param Request $request
+     * @param LaravelRequest $request
      * @return array
      */
-    protected function contextFromSymfony(Request $request): array
+    protected function contextFromLaravel(LaravelRequest $request): array
     {
         $content = $request->getContent();
 
         return [
-            'method' => $request->getMethod(),
-            'url' => $request->getUri(),
+            'method' => $request->method(),
+            'url' => $request->fullUrl(),
             'body_length' => strlen($content),
             'body' => base64_encode(substr($content, 0, $this->maxBodyLength)),
             'headers' => normalize_headers($request->headers->all()),

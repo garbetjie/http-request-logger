@@ -2,8 +2,8 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
+use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class SafeResponseContext extends ResponseContext
 {
@@ -22,14 +22,14 @@ class SafeResponseContext extends ResponseContext
     }
 
     /**
-     * Extract context from a Symfony response (which includes Laravel responses).
+     * Extract context from a Laravel response.
      *
-     * @param Response $response
+     * @param LaravelResponse $response
      * @return array
      */
-    protected function contextFromSymfony(Response $response): array
+    protected function contextFromLaravel(LaravelResponse $response): array
     {
-        return $this->makeSafe(parent::contextFromSymfony($response));
+        return $this->makeSafe(parent::contextFromLaravel($response));
     }
 
     /**

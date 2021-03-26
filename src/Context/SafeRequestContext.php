@@ -2,8 +2,8 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
+use Illuminate\Http\Request as LaravelRequest;
 use Psr\Http\Message\RequestInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class SafeRequestContext extends RequestContext
 {
@@ -21,9 +21,9 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromSymfony(Request $request): array
+    protected function contextFromLaravel(LaravelRequest $request): array
     {
-        return $this->makeSafe(parent::contextFromSymfony($request));
+        return $this->makeSafe(parent::contextFromLaravel($request));
     }
 
     /**

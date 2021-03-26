@@ -4,8 +4,8 @@ namespace Garbetjie\Http\RequestLogging;
 
 use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
 use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Illuminate\Http\Request as LaravelRequest;
+use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -164,7 +164,7 @@ class Logger
     }
 
     /**
-     * @param RequestInterface|SymfonyRequest|ServerRequestInterface|string $request
+     * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
      * @param string $direction
      *
      * @return LoggedRequest
@@ -184,8 +184,8 @@ class Logger
     }
 
     /**
-     * @param RequestInterface|SymfonyRequest|ServerRequestInterface|string $request
-     * @param ResponseInterface|SymfonyResponse|string $response
+     * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
+     * @param ResponseInterface|LaravelResponse|string $response
      * @param LoggedRequest $entry
      *
      * @return void

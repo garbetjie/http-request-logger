@@ -4,7 +4,7 @@ namespace Garbetjie\Http\RequestLogging\Middleware;
 
 use Closure;
 use Illuminate\Http\Request as LaravelRequest;
-use Illuminate\Http\Response;
+use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -33,7 +33,7 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      *
      * @param LaravelRequest $request
      * @param Closure $next
-     * @return Response
+     * @return LaravelResponse
      */
     public function handle($request, Closure $next)
     {
