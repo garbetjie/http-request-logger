@@ -1,9 +1,9 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\Http\RequestLogging\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as LaravelRequest;
 use Illuminate\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,9 +21,9 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        [$started, $id] = $this->logRequest($request, 'in');
+        $logged = $this->logger->request($request, $this->logger::DIRECTION_IN);
         $response = $handler->handle($request);
-        $this->logResponse($request, $response, $id, $started, 'in');
+        $this->logger->response($request, $response, $logged);
 
         return $response;
     }
@@ -31,15 +31,15 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
     /**
      * Laravel middleware handler.
      *
-     * @param Request $request
+     * @param LaravelRequest $request
      * @param Closure $next
      * @return Response
      */
     public function handle($request, Closure $next)
     {
-        [$started, $id] = $this->logRequest($request, 'in');
+        $logged = $this->logger->request($request, $this->logger::DIRECTION_IN);
         $response = $next($request);
-        $this->logResponse($request, $response, $id, $started, 'in');
+        $this->logger->response($request, $response, $logged);
 
         return $response;
     }
