@@ -1,6 +1,7 @@
 <?php
 
 namespace Garbetjie\Http\RequestLogging\Context {
+
     use Garbetjie\Http\RequestLogging\Tests\HeaderBag;
 
     function header(string $name) {
@@ -17,6 +18,7 @@ namespace Garbetjie\Http\RequestLogging\Context {
 }
 
 namespace Garbetjie\Http\RequestLogging\Tests\Context {
+
     use Garbetjie\Http\RequestLogging\Tests\HeaderBag;
 
     function header(string $name) {

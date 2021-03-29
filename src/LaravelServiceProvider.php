@@ -2,14 +2,12 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Garbetjie\Http\RequestLogging\Middleware\IncomingRequestLoggingMiddleware;
 use Garbetjie\Http\RequestLogging\Middleware\OutgoingRequestLoggingMiddleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
-use Psr\Log\LogLevel;
 
 class LaravelServiceProvider extends ServiceProvider
 {

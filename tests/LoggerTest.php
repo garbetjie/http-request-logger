@@ -2,24 +2,14 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\ResponseLogEntry;
-use Illuminate\Http\Request as LaravelRequest;
-use Illuminate\Http\Response as LaravelResponse;
-use Psr\Http\Message\ResponseInterface;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use function array_column;
-use function array_pad;
 use function base64_encode;
-use function func_get_args;
-use function is_string;
 use function random_bytes;
-use function spl_object_hash;
 
 class LoggerTest extends TestCase
 {

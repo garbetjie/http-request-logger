@@ -5,7 +5,6 @@ namespace Garbetjie\Http\RequestLogging;
 use Illuminate\Http\Request as LaravelRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use function floatval;
 use function strtolower;
 
 final class RequestLogEntry

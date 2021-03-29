@@ -8,7 +8,6 @@ use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use function microtime;
 
 final class ResponseLogEntry
 {

@@ -5,7 +5,7 @@ namespace Garbetjie\Http\RequestLogging\Tests;
 use Garbetjie\Http\RequestLogging\SoapClient;
 use GuzzleHttp\Client;
 use Monolog\Test\TestCase;
-use \SoapClient as BaseSoapClient;
+use SoapClient as BaseSoapClient;
 
 class SoapClientTest extends TestCase
 {
