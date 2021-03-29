@@ -28,12 +28,31 @@ class LoggerTest extends TestCase
      */
     protected $handler;
 
-    // TODO Ensure that custom log levels are respected.
-
     protected function setUp(): void
     {
         $this->handler = new ArrayMonologHandler();
         $this->logger = new Logger(new Monolog('test', [$this->handler]));
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::logLevelIsRespected()
+     *
+     * @param int|string $level
+     * @param string $name
+     */
+    public function testLogLevelIsRespected($level, string $name)
+    {
+        $logger = new Logger(new Monolog('test', [$this->handler]), $level);
+
+        $logger->response(
+            $logger->request($this->createPsrRequest(), Logger::DIRECTION_IN),
+            $this->createPsrResponse()
+        );
+
+        $this->assertEquals(Monolog::toMonologLevel($level), $this->handler->logs(0)['level']);
+        $this->assertEquals($name, $this->handler->logs(0)['level_name']);
+        $this->assertEquals(Monolog::toMonologLevel($level), $this->handler->logs(1)['level']);
+        $this->assertEquals($name, $this->handler->logs(1)['level_name']);
     }
 
     public function testDurationIsCalculatedCorrectly()

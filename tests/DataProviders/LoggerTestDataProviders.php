@@ -7,6 +7,7 @@ use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\ResponseLogEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
+use Psr\Log\LogLevel;
 use function is_string;
 use function spl_object_hash;
 
@@ -202,6 +203,35 @@ class LoggerTestDataProviders
             [true, false],
             [false, true],
             [false, false]
+        ];
+    }
+
+    public function logLevelIsRespected(): array
+    {
+        return [
+            [LogLevel::DEBUG, 'DEBUG'],
+            [100, 'DEBUG'],
+
+            [LogLevel::INFO, 'INFO'],
+            [200, 'INFO'],
+
+            [LogLevel::NOTICE, 'NOTICE'],
+            [250, 'NOTICE'],
+
+            [LogLevel::WARNING, 'WARNING'],
+            [300, 'WARNING'],
+
+            [LogLevel::ERROR, 'ERROR'],
+            [400, 'ERROR'],
+
+            [LogLevel::CRITICAL, 'CRITICAL'],
+            [500, 'CRITICAL'],
+
+            [LogLevel::ALERT, 'ALERT'],
+            [550, 'ALERT'],
+
+            [LogLevel::EMERGENCY, 'EMERGENCY'],
+            [600, 'EMERGENCY'],
         ];
     }
 }
