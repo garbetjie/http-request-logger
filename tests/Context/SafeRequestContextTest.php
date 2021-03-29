@@ -3,6 +3,8 @@
 namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
 use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
+use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
@@ -39,7 +41,7 @@ class SafeRequestContextTest extends TestCase
     protected function assertHeadersAreMasked($request)
     {
         $extractor = new SafeRequestContext();
-        $context = $extractor($request);
+        $context = $extractor(new RequestLogEntry($request, 'id', Logger::DIRECTION_IN));
 
         $reflection = new ReflectionObject($extractor);
         $headersProp = $reflection->getProperty('headers');

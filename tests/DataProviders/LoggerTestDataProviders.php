@@ -3,6 +3,8 @@
 namespace Garbetjie\Http\RequestLogging\Tests\DataProviders;
 
 use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
+use Garbetjie\Http\RequestLogging\ResponseLogEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use function is_string;
@@ -18,8 +20,17 @@ class LoggerTestDataProviders
         return [
             'id' => ['id', [function() { }]],
             'context' => ['context', [null, null]],
-            'message' => ['message', [function() { }]],
+            'message' => ['message', [function() { }, function() { }]],
             'enabled' => ['enabled', [true, true]]
+        ];
+    }
+
+    public function correctArgumentsAreSuppliedToCustomisingCallables(): array
+    {
+        return [
+            ['context', 2],
+            ['message', 1],
+            ['enabled', 2],
         ];
     }
 
@@ -41,47 +52,56 @@ class LoggerTestDataProviders
             return false;
         };
 
-        $message = function(string $what, string $direction) {
-            return "{$what}:{$direction}";
+        $reqMessage = function(RequestLogEntry $entry) {
+            return "request:{$entry->direction()}";
+        };
+
+        $resMessage = function (ResponseLogEntry $entry) {
+            return "response:{$entry->direction()}";
         };
 
         return [
-            [true, true, Logger::DIRECTION_IN, $message, ['request:in', 'response:out']],
-            [true, false, Logger::DIRECTION_IN, $message, ['request:in']],
-            [false, true, Logger::DIRECTION_IN, $message, ['response:out']],
-            [false, false, Logger::DIRECTION_IN, $message, []],
+            [true, true, Logger::DIRECTION_IN, $reqMessage, $resMessage, ['request:in', 'response:out']],
+            [true, false, Logger::DIRECTION_IN, $reqMessage, $resMessage, ['request:in']],
+            [false, true, Logger::DIRECTION_IN, $reqMessage, $resMessage, ['response:out']],
+            [false, false, Logger::DIRECTION_IN, $reqMessage, $resMessage, []],
 
-            [true, true, Logger::DIRECTION_OUT, $message, ['request:out', 'response:in']],
-            [true, false, Logger::DIRECTION_OUT, $message, ['request:out']],
-            [false, true, Logger::DIRECTION_OUT, $message, ['response:in']],
-            [false, false, Logger::DIRECTION_OUT, $message, []],
+            [true, true, Logger::DIRECTION_OUT, $reqMessage, $resMessage, ['request:out', 'response:in']],
+            [true, false, Logger::DIRECTION_OUT, $reqMessage, $resMessage, ['request:out']],
+            [false, true, Logger::DIRECTION_OUT, $reqMessage, $resMessage, ['response:in']],
+            [false, false, Logger::DIRECTION_OUT, $reqMessage, $resMessage, []],
 
-            [$fnTrue, $fnTrue, Logger::DIRECTION_IN, $message, ['request:in', 'response:out']],
-            [$fnTrue, $fnFalse, Logger::DIRECTION_IN, $message, ['request:in']],
-            [$fnFalse, $fnTrue, Logger::DIRECTION_IN, $message, ['response:out']],
-            [$fnFalse, $fnFalse, Logger::DIRECTION_IN, $message, []],
+            [$fnTrue, $fnTrue, Logger::DIRECTION_IN, $reqMessage, $resMessage, ['request:in', 'response:out']],
+            [$fnTrue, $fnFalse, Logger::DIRECTION_IN, $reqMessage, $resMessage, ['request:in']],
+            [$fnFalse, $fnTrue, Logger::DIRECTION_IN, $reqMessage, $resMessage, ['response:out']],
+            [$fnFalse, $fnFalse, Logger::DIRECTION_IN, $reqMessage, $resMessage, []],
 
-            [$fnTrue, $fnTrue, Logger::DIRECTION_OUT, $message, ['request:out', 'response:in']],
-            [$fnTrue, $fnFalse, Logger::DIRECTION_OUT, $message, ['request:out']],
-            [$fnFalse, $fnTrue, Logger::DIRECTION_OUT, $message, ['response:in']],
-            [$fnFalse, $fnFalse, Logger::DIRECTION_OUT, $message, []],
+            [$fnTrue, $fnTrue, Logger::DIRECTION_OUT, $reqMessage, $resMessage, ['request:out', 'response:in']],
+            [$fnTrue, $fnFalse, Logger::DIRECTION_OUT, $reqMessage, $resMessage, ['request:out']],
+            [$fnFalse, $fnTrue, Logger::DIRECTION_OUT, $reqMessage, $resMessage, ['response:in']],
+            [$fnFalse, $fnFalse, Logger::DIRECTION_OUT, $reqMessage, $resMessage, []],
         ];
     }
 
     public function contextCanBeCustomised(): array
     {
-        $requestExtractor = function($request, $direction) {
+        $requestExtractor = function(RequestLogEntry $logEntry) {
+            $request = $logEntry->request();
+
             return [
                 'what' => 'request',
-                'direction' => $direction,
+                'direction' => $logEntry->direction(),
                 'request' => is_string($request) ? $request : spl_object_hash($request),
             ];
         };
 
-        $responseExtractor = function($response, $request, $direction) {
+        $responseExtractor = function(ResponseLogEntry $logEntry) {
+            $request = $logEntry->request();
+            $response = $logEntry->response();
+
             return [
                 'what' => 'response',
-                'direction' => $direction,
+                'direction' => $logEntry->direction(),
                 'request' => is_string($request) ? $request : spl_object_hash($request),
                 'response' => is_string($response) ? $response : spl_object_hash($response),
             ];

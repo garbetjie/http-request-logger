@@ -3,6 +3,8 @@
 namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
 use Garbetjie\Http\RequestLogging\Context\RequestContext;
+use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use PHPUnit\Framework\TestCase;
 use function base64_encode;
@@ -19,7 +21,9 @@ class RequestContextTest extends TestCase
 
     public function testIncomingPsrRequest()
     {
-        $context = (new RequestContext())->__invoke($this->createPsrServerRequest());
+        $context = (new RequestContext())->__invoke(
+            new RequestLogEntry($this->createPsrServerRequest(), 'id', Logger::DIRECTION_IN)
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
@@ -28,7 +32,9 @@ class RequestContextTest extends TestCase
 
     public function testOutgoingPsrRequest()
     {
-        $context = (new RequestContext())->__invoke($this->createPsrRequest());
+        $context = (new RequestContext())->__invoke(
+            new RequestLogEntry($this->createPsrRequest(), 'id', Logger::DIRECTION_IN)
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
@@ -37,7 +43,9 @@ class RequestContextTest extends TestCase
 
     public function testIncomingLaravelRequest()
     {
-        $context = (new RequestContext())->__invoke($this->createLaravelRequest());
+        $context = (new RequestContext())->__invoke(
+            new RequestLogEntry($this->createLaravelRequest(), 'id', Logger::DIRECTION_IN)
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
@@ -46,7 +54,9 @@ class RequestContextTest extends TestCase
 
     public function testIncomingStringRequestWithHttps()
     {
-        $context = (new RequestContext())->__invoke($this->createStringRequest());
+        $context = (new RequestContext())->__invoke(
+            new RequestLogEntry($this->createStringRequest(), 'id', Logger::DIRECTION_IN)
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
@@ -55,7 +65,9 @@ class RequestContextTest extends TestCase
 
     public function testIncomingStringRequestWithoutHttps()
     {
-        $context = (new RequestContext())->__invoke($this->createStringRequest(false));
+        $context = (new RequestContext())->__invoke(
+            new RequestLogEntry($this->createStringRequest(false), 'id', Logger::DIRECTION_IN)
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'GET', 'body', ['content-type']);
@@ -67,7 +79,9 @@ class RequestContextTest extends TestCase
         $request = $this->createStringRequest();
         unset($_SERVER['HTTPS'], $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_METHOD']);
 
-        $context = (new RequestContext())->__invoke($request);
+        $context = (new RequestContext())->__invoke(
+            new RequestLogEntry($request, 'id', Logger::DIRECTION_IN)
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, null, 'body', ['content-type']);
@@ -76,7 +90,7 @@ class RequestContextTest extends TestCase
 
     protected function assertContextHasRequiredKeys(array $context)
     {
-        foreach (['method', 'url', 'body_length', 'body', 'headers'] as $key) {
+        foreach (['id', 'method', 'url', 'body_length', 'body', 'headers'] as $key) {
             $this->assertArrayHasKey($key, $context);
         }
     }

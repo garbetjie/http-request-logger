@@ -3,13 +3,17 @@
 namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
 use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
+use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
+use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 
 class SafeResponseContextTest extends TestCase
 {
-    use CreatesResponses;
+    use CreatesRequests, CreatesResponses;
 
     public function testIsCallable()
     {
@@ -18,23 +22,38 @@ class SafeResponseContextTest extends TestCase
 
     public function testLaravelResponseValuesAreMasked()
     {
-        $this->assertHeadersAreMasked($this->createLaravelResponse());
+        $this->assertHeadersAreMasked(
+            $this->createLaravelRequest(),
+            $this->createLaravelResponse()
+        );
     }
 
     public function testPsrResponseValuesAreMasked()
     {
-        $this->assertHeadersAreMasked($this->createPsrResponse());
+        $this->assertHeadersAreMasked(
+            $this->createPsrRequest(),
+            $this->createPsrResponse()
+        );
     }
 
     public function testStringResponseValuesAreMasked()
     {
-        $this->assertHeadersAreMasked($this->createStringResponse());
+        $this->assertHeadersAreMasked(
+            $this->createStringRequest(),
+            $this->createStringResponse()
+        );
     }
 
-    protected function assertHeadersAreMasked($response)
+    protected function assertHeadersAreMasked($request, $response)
     {
         $extractor = new SafeResponseContext();
-        $context = $extractor($response);
+        $context = $extractor(
+            new ResponseLogEntry(
+                new RequestLogEntry($request, 'id', Logger::DIRECTION_IN),
+                $response,
+                1
+            )
+        );
 
         $reflection = new ReflectionObject($extractor);
         $headersProp = $reflection->getProperty('headers');

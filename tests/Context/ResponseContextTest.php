@@ -3,6 +3,10 @@
 namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
 use Garbetjie\Http\RequestLogging\Context\ResponseContext;
+use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
+use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use PHPUnit\Framework\TestCase;
 use function base64_encode;
@@ -10,7 +14,7 @@ use function strlen;
 
 class ResponseContextTest extends TestCase
 {
-    use CreatesResponses;
+    use CreatesRequests, CreatesResponses;
 
     protected function setUp(): void
     {
@@ -24,7 +28,13 @@ class ResponseContextTest extends TestCase
 
     public function testPsrResponse()
     {
-        $context = (new ResponseContext())->__invoke($this->createPsrResponse());
+        $context = (new ResponseContext())->__invoke(
+            new ResponseLogEntry(
+                new RequestLogEntry($this->createPsrRequest(), 'id', Logger::DIRECTION_IN),
+                $this->createPsrResponse(),
+                1,
+            )
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
@@ -32,7 +42,13 @@ class ResponseContextTest extends TestCase
 
     public function testLaravelResponse()
     {
-        $context = (new ResponseContext())->__invoke($this->createLaravelResponse());
+        $context = (new ResponseContext())->__invoke(
+            new ResponseLogEntry(
+                new RequestLogEntry($this->createLaravelRequest(), 'id', Logger::DIRECTION_IN),
+                $this->createLaravelResponse(),
+                1,
+            )
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
@@ -40,7 +56,13 @@ class ResponseContextTest extends TestCase
 
     public function testStringResponse()
     {
-        $context = (new ResponseContext())->__invoke($this->createStringResponse());
+        $context = (new ResponseContext())->__invoke(
+            new ResponseLogEntry(
+                new RequestLogEntry($this->createStringRequest(), 'id', Logger::DIRECTION_IN),
+                $this->createStringResponse(),
+                1
+            ),
+        );
 
         $this->assertContextHasRequiredKeys($context);
         $this->assertContextMatches($context, 'body', ['content-type', 'set-cookie', 'authorization']);
@@ -48,7 +70,7 @@ class ResponseContextTest extends TestCase
 
     protected function assertContextHasRequiredKeys(array $context)
     {
-        foreach (['status_code', 'body', 'body_length', 'headers'] as $key) {
+        foreach (['id', 'duration', 'status_code', 'body', 'body_length', 'headers'] as $key) {
             $this->assertArrayHasKey($key, $context);
         }
     }

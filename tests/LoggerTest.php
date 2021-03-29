@@ -2,8 +2,9 @@
 
 namespace Garbetjie\Http\RequestLogging\Tests;
 
-use Garbetjie\Http\RequestLogging\LoggedRequest;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\Http\RequestLogging\ResponseLogEntry;
 use Illuminate\Http\Request as LaravelRequest;
 use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -12,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use function array_column;
+use function array_pad;
 use function base64_encode;
 use function func_get_args;
 use function is_string;
@@ -32,10 +34,119 @@ class LoggerTest extends TestCase
      */
     protected $handler;
 
+    // TODO Ensure that the startedAt SplObjectStorage object is empty after logging a request/response.
+    // TODO Ensure that message(), context() and enabled() receive RequestLogEntry|ResponseLogEntry.
+
     protected function setUp(): void
     {
         $this->handler = new ArrayMonologHandler();
         $this->logger = new Logger(new Monolog('test', [$this->handler]), 'debug');
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     *
+     * @param $request
+     * @param $response
+     * @param string $direction
+     */
+    public function testCorrectArgumentsArePassedToMessageCallable($request, $response, string $direction)
+    {
+        $called = 0;
+
+        $this->logger->message(
+            function (...$args) use (&$called) {
+                $called++;
+
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+            },
+            function (...$args) use (&$called) {
+                $called++;
+
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+            }
+        );
+
+        $this->logger->response(
+            $this->logger->request($request, $direction),
+            $response
+        );
+
+        $this->assertEquals(2, $called);
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     *
+     * @param $request
+     * @param $response
+     * @param string $direction
+     */
+    public function testCorrectArgumentsArePassedToContextCallables($request, $response, string $direction)
+    {
+        $called = 0;
+
+        $this->logger->context(
+            function (...$args) use (&$called) {
+                $called++;
+
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+            },
+            function (...$args) use (&$called) {
+                $called++;
+
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+            }
+        );
+
+        $this->logger->response(
+            $this->logger->request($request, $direction),
+            $response
+        );
+
+        $this->assertEquals(2, $called);
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     *
+     * @param $request
+     * @param $response
+     * @param string $direction
+     */
+    public function testCorrectArgumentsArePassedToEnabledCallables($request, $response, string $direction)
+    {
+        $called = 0;
+
+        $this->logger->enabled(
+            function (...$args) use (&$called) {
+                $called++;
+
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+
+                return true;
+            },
+            function (...$args) use (&$called) {
+                $called++;
+
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+
+                return true;
+            }
+        );
+
+        $this->logger->response(
+            $this->logger->request($request, $direction),
+            $response
+        );
+
+        $this->assertEquals(2, $called);
     }
 
     /**
@@ -52,7 +163,7 @@ class LoggerTest extends TestCase
     public function testReturnValueWhenLoggingRequest()
     {
         $this->assertInstanceOf(
-            LoggedRequest::class,
+            RequestLogEntry::class,
             $this->logger->request($this->createLaravelRequest(), Logger::DIRECTION_IN)
         );
     }
@@ -63,7 +174,7 @@ class LoggerTest extends TestCase
         $logged = $this->logger->request($request, Logger::DIRECTION_IN);
 
         $this->assertNull(
-            $this->logger->response($request, $this->createLaravelResponse(), $logged)
+            $this->logger->response($logged, $this->createLaravelResponse())
         );
     }
 
@@ -77,13 +188,9 @@ class LoggerTest extends TestCase
             }
         );
 
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
-
         $this->logger->response(
-            $request,
-            $response,
-            $this->logger->request($request, $this->logger::DIRECTION_IN)
+            $this->logger->request($this->createLaravelRequest(), $this->logger::DIRECTION_IN),
+            $this->createLaravelResponse(),
         );
 
         $this->assertEquals($id, $this->handler->logs(0)['context']['id']);
@@ -113,9 +220,8 @@ class LoggerTest extends TestCase
         $this->logger->context($requestContext, $responseContext);
 
         $this->logger->response(
-            $request,
+            $this->logger->request($request, $direction),
             $response,
-            $this->logger->request($request, $direction)
         );
 
         foreach ($expectedRequestContext as $key => $value) {
@@ -145,18 +251,17 @@ class LoggerTest extends TestCase
         $message = base64_encode(random_bytes(16));
 
         $this->logger->message(
-            function (string $what, string $direction) use ($message) {
-                return "{$what}:{$direction}:{$message}";
-            }
+            function (RequestLogEntry $logEntry) use ($message) {
+                return "request:{$logEntry->direction()}:{$message}";
+            },
+            function (ResponseLogEntry $logEntry) use ($message) {
+                return "response:{$logEntry->direction()}:{$message}";
+            },
         );
 
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
-
         $this->logger->response(
-            $request,
-            $response,
-            $this->logger->request($request, $direction)
+            $this->logger->request($this->createLaravelRequest(), $direction),
+            $this->createLaravelResponse(),
         );
 
         $this->assertArrayHasKey('message', $this->handler->logs(0));
@@ -172,21 +277,27 @@ class LoggerTest extends TestCase
      * @param callable|bool $requestToggle
      * @param callable|bool $responseToggle
      * @param string $direction
-     * @param callable $message
+     * @param callable $reqMessage
+     * @param callable $resMessage
      * @param array $expectedMessages
      */
-    public function testEnabledCanBeCustomised($requestToggle, $responseToggle, string $direction, callable $message, array $expectedMessages)
-    {
+    public function testEnabledCanBeCustomised(
+        $requestToggle,
+        $responseToggle,
+        string $direction,
+        callable $reqMessage,
+        callable $resMessage,
+        array $expectedMessages
+    ) {
         $request = $this->createLaravelRequest();
         $response = $this->createLaravelResponse();
 
         $this->logger->enabled($requestToggle, $responseToggle);
-        $this->logger->message($message);
+        $this->logger->message($reqMessage, $resMessage);
 
         $this->logger->response(
-            $request,
+            $this->logger->request($request, $direction),
             $response,
-            $this->logger->request($request, $direction)
         );
 
         $this->assertCount(count($expectedMessages), $this->handler->logs());
@@ -205,9 +316,8 @@ class LoggerTest extends TestCase
         $this->logger->enabled(true, true);
 
         $this->logger->response(
-            $request,
+            $this->logger->request($request, $direction),
             $response,
-            $this->logger->request($request, $direction)
         );
 
         $this->assertCount(2, $this->handler->logs());
@@ -221,19 +331,26 @@ class LoggerTest extends TestCase
     public function testMessageCallableArguments(string $direction)
     {
         $this->logger->message(
-            function ($what, $direction) {
-                $this->assertContains($what, ['request', 'response']);
-                $this->assertContains($direction, [$this->logger::DIRECTION_IN, $this->logger::DIRECTION_OUT]);
-            }
+            function(...$args) {
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+
+                return '';
+            },
+            function(...$args) {
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+
+                return '';
+            },
         );
 
         $request = $this->createLaravelRequest();
         $response = $this->createLaravelResponse();
 
         $this->logger->response(
-            $request,
+            $this->logger->request($request, $direction),
             $response,
-            $this->logger->request($request, $direction)
         );
     }
 
@@ -247,18 +364,23 @@ class LoggerTest extends TestCase
     public function testEnabledCallableArguments($request, $response, string $direction)
     {
         $this->logger->enabled(
-            function () {
-                $this->assertRequestCallableArguments(...func_get_args());
+            function(...$args) {
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+
+                return [];
             },
-            function () {
-                $this->assertResponseCallableArguments(...func_get_args());
+            function(...$args) {
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+
+                return [];
             }
         );
 
         $this->logger->response(
-            $request,
+            $this->logger->request($request, $direction),
             $response,
-            $this->logger->request($request, $direction)
         );
     }
 
@@ -273,59 +395,23 @@ class LoggerTest extends TestCase
     public function testContextCallableArguments($request, $response, string $direction)
     {
         $this->logger->context(
-            function() {
-                $this->assertRequestCallableArguments(...func_get_args());
+            function(...$args) {
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
 
                 return [];
             },
-            function() {
-                $this->assertResponseCallableArguments(...func_get_args());
+            function(...$args) {
+                $this->assertCount(1, $args);
+                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
 
                 return [];
             }
         );
 
         $this->logger->response(
-            $request,
+            $this->logger->request($request, $direction),
             $response,
-            $this->logger->request($request, $direction)
         );
-    }
-
-    protected function assertRequestCallableArguments($request, $direction)
-    {
-        $this->assertThat(
-            $request,
-            $this->logicalOr(
-                $this->isType('string'),
-                $this->isInstanceOf(RequestInterface::class),
-                $this->isInstanceOf(LaravelRequest::class),
-            ),
-        );
-
-        $this->assertContains($direction, [$this->logger::DIRECTION_IN, $this->logger::DIRECTION_OUT]);
-    }
-
-    protected function assertResponseCallableArguments($response, $request, $direction)
-    {
-        $this->assertThat(
-            $response,
-            $this->logicalOr(
-                $this->isType('string'),
-                $this->isInstanceOf(ResponseInterface::class),
-                $this->isInstanceOf(LaravelResponse::class),
-            )
-        );
-
-        $this->assertThat(
-            $request,
-            $this->logicalOr(
-                $this->isType('string'),
-                $this->isInstanceOf(RequestInterface::class),
-                $this->isInstanceOf(LaravelRequest::class),
-            ),
-        );
-
-        $this->assertContains($direction, [$this->logger::DIRECTION_IN, $this->logger::DIRECTION_OUT]);
     }
 }
