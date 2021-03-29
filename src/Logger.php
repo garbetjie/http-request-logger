@@ -11,9 +11,8 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use SplObjectStorage;
-use WeakMap;
-use WeakReference;
 use function call_user_func;
 use function in_array;
 use function is_callable;
@@ -65,7 +64,7 @@ class Logger
      * @param LoggerInterface $logger
      * @param string|int $level
      */
-    public function __construct(LoggerInterface $logger, $level = 'debug')
+    public function __construct(LoggerInterface $logger, $level = LogLevel::DEBUG)
     {
         // Set logger and level.
         $this->logger = $logger;

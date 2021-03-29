@@ -12,6 +12,7 @@ use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use function array_column;
 use function array_pad;
 use function base64_encode;
@@ -36,11 +37,12 @@ class LoggerTest extends TestCase
 
     // TODO Ensure that the startedAt SplObjectStorage object is empty after logging a request/response.
     // TODO Ensure that message(), context() and enabled() receive RequestLogEntry|ResponseLogEntry.
+    // TODO Ensure that custom log levels are respected.
 
     protected function setUp(): void
     {
         $this->handler = new ArrayMonologHandler();
-        $this->logger = new Logger(new Monolog('test', [$this->handler]), 'debug');
+        $this->logger = new Logger(new Monolog('test', [$this->handler]));
     }
 
     /**
