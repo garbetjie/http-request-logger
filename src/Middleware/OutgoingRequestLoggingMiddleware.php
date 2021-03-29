@@ -16,17 +16,17 @@ class OutgoingRequestLoggingMiddleware extends Middleware
     public function __invoke(callable $handler)
     {
         return function ($request, array $options) use ($handler) {
-            $logged = $this->logger->request($request, $this->logger::DIRECTION_OUT);
+            $entry = $this->logger->request($request, $this->logger::DIRECTION_OUT);
 
             return $handler($request, $options)->then(
-                function ($response) use ($request, $logged) {
-                    $this->logger->response($request, $response, $logged);
+                function ($response) use ($request, $entry) {
+                    $this->logger->response($entry, $response);
 
                     return $response;
                 },
-                function ($e) use ($request, $logged) {
+                function ($e) use ($request, $entry) {
                     if ($response = method_exists($e, 'getResponse') ? $e->getResponse() : null) {
-                        $this->logger->response($request, $response, $logged);
+                        $this->logger->response($entry, $response);
                     }
 
                     throw $e;

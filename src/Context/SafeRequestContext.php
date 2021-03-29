@@ -2,8 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
-use Illuminate\Http\Request as LaravelRequest;
-use Psr\Http\Message\RequestInterface;
+use Garbetjie\Http\RequestLogging\RequestLogEntry;
 
 class SafeRequestContext extends RequestContext
 {
@@ -13,25 +12,25 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromPSR(RequestInterface $request): array
+    protected function contextFromPSR(RequestLogEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromPSR($request));
+        return $this->makeSafe(parent::contextFromPSR($entry));
     }
 
     /**
      * @inheritdoc
      */
-    protected function contextFromLaravel(LaravelRequest $request): array
+    protected function contextFromLaravel(RequestLogEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromLaravel($request));
+        return $this->makeSafe(parent::contextFromLaravel($entry));
     }
 
     /**
      * @inheritdoc
      */
-    protected function contextFromString(string $request): array
+    protected function contextFromString(RequestLogEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromString($request));
+        return $this->makeSafe(parent::contextFromString($entry));
     }
 
     /**

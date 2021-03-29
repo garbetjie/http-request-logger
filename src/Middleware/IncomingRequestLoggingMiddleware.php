@@ -21,9 +21,9 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $logged = $this->logger->request($request, $this->logger::DIRECTION_IN);
+        $entry = $this->logger->request($request, $this->logger::DIRECTION_IN);
         $response = $handler->handle($request);
-        $this->logger->response($request, $response, $logged);
+        $this->logger->response($entry, $response);
 
         return $response;
     }
@@ -33,13 +33,13 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      *
      * @param LaravelRequest $request
      * @param Closure $next
-     * @return LaravelResponse
+     * @return LaravelResponse|mixed
      */
     public function handle($request, Closure $next)
     {
-        $logged = $this->logger->request($request, $this->logger::DIRECTION_IN);
+        $entry = $this->logger->request($request, $this->logger::DIRECTION_IN);
         $response = $next($request);
-        $this->logger->response($request, $response, $logged);
+        $this->logger->response($entry, $response);
 
         return $response;
     }

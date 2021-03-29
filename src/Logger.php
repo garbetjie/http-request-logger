@@ -6,11 +6,16 @@ use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
 use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
 use Illuminate\Http\Request as LaravelRequest;
 use Illuminate\Http\Response as LaravelResponse;
+use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use SplObjectStorage;
+use WeakMap;
+use WeakReference;
 use function call_user_func;
+use function in_array;
 use function is_callable;
 use function microtime;
 use function strtolower;
@@ -23,7 +28,7 @@ class Logger
     protected $logger;
 
     /**
-     * @var mixed
+     * @var string|int
      */
     protected $level;
 
@@ -38,14 +43,19 @@ class Logger
     protected $enabled = [];
 
     /**
-     * @var callable
+     * @var callable[]
      */
-    protected $message;
+    protected $messages = [];
 
     /**
      * @var callable
      */
     protected $id;
+
+    /**
+     * @var SplObjectStorage
+     */
+    protected $startedAt;
 
     public const DIRECTION_IN = 'in';
 
@@ -53,26 +63,33 @@ class Logger
 
     /**
      * @param LoggerInterface $logger
-     * @param mixed $level
+     * @param string|int $level
      */
-    public function __construct(LoggerInterface $logger, $level)
+    public function __construct(LoggerInterface $logger, $level = 'debug')
     {
         // Set logger and level.
         $this->logger = $logger;
         $this->level = $level;
+
+        // Create the map of startedAt timestamps.
+        $this->startedAt = new SplObjectStorage();
 
         // Set default extractors.
         $this->context(new SafeRequestContext(), new SafeResponseContext());
 
         // Set default message handler.
         $this->message(
-            function(string $what, string $direction) {
+            function (RequestLogEntry $entry) {
                 return [
-                    'request:in' => 'http request received',
-                    'request:out' => 'http request sent',
-                    'response:in' => 'http response received',
-                    'response:out' => 'http response sent',
-                ]["{$what}:{$direction}"];
+                    Logger::DIRECTION_IN => 'http request received',
+                    Logger::DIRECTION_OUT => 'http request sent',
+                ][$entry->direction()];
+            },
+            function (ResponseLogEntry $entry) {
+                return [
+                    Logger::DIRECTION_IN => 'http response received',
+                    Logger::DIRECTION_OUT => 'http response sent',
+                ][$entry->direction()];
             }
         );
 
@@ -104,13 +121,20 @@ class Logger
     /**
      * Set the function used to generate the log message.
      *
-     * @param callable $handler
+     * @param callable|null $request
+     * @param callable|null $response
      *
      * @return $this
      */
-    public function message(callable $handler): Logger
+    public function message(?callable $request, ?callable $response): Logger
     {
-        $this->message = $handler;
+        if ($request !== null) {
+            $this->messages['requests'] = $request;
+        }
+
+        if ($response !== null) {
+            $this->messages['responses'] = $response;
+        }
 
         return $this;
     }
@@ -167,38 +191,62 @@ class Logger
      * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
      * @param string $direction
      *
-     * @return LoggedRequest
+     * @return RequestLogEntry
      */
-    public function request($request, string $direction): LoggedRequest
+    public function request($request, string $direction): RequestLogEntry
     {
-        $id = call_user_func($this->id);
         $direction = strtolower($direction);
-        $message = call_user_func($this->message, __FUNCTION__, $direction);
 
-        if (call_user_func($this->enabled['requests'], $request, $direction)) {
-            $context = call_user_func($this->context['requests'], $request, $direction) ?: [];
-            $this->logger->log($this->level, $message, ['id' => $id] + $context);
+        // Ensure a valid direction is given.
+        if (!in_array($direction, [Logger::DIRECTION_IN, Logger::DIRECTION_OUT])) {
+            throw new InvalidArgumentException("Unexpected request direction '{$direction}'.");
         }
 
-        return new LoggedRequest($id, $direction, microtime(true));
+        // Create the request's log entry.
+        $logEntry = new RequestLogEntry(
+            $request,
+            call_user_func($this->id),
+            $direction
+        );
+
+        // Only log the request if requests should be logged.
+        if (call_user_func($this->enabled['requests'], $logEntry)) {
+            $this->logger->log(
+                $this->level,
+                call_user_func($this->messages['requests'], $logEntry),
+                call_user_func($this->context['requests'], $logEntry) ?: []
+            );
+        }
+
+        // This is only populated here because we don't know how long the call to $this->logger->log() might take.
+        // If the log() call takes 1s, this will misrepresent the duration of the request, hence why we only populate
+        // it later.
+        // It would be nice for the context extractors and togglers to receive the proper values, but ¯\_(ツ)_/¯
+        $this->startedAt[$logEntry] = microtime(true);
+
+        return $logEntry;
     }
 
     /**
-     * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
+     * @param RequestLogEntry $request
      * @param ResponseInterface|LaravelResponse|string $response
-     * @param LoggedRequest $entry
      *
      * @return void
      */
-    public function response($request, $response, LoggedRequest $entry): void
+    public function response(RequestLogEntry $request, $response): void
     {
-        $direction = $entry->direction() === 'in' ? 'out' : 'in';
-        $message = call_user_func($this->message, __FUNCTION__, $direction);
-        $duration = microtime(true) - $entry->started();
+        $logEntry = new ResponseLogEntry($request, $response, $this->startedAt[$request] ?? null);
 
-        if (call_user_func($this->enabled['responses'], $response, $request, $direction)) {
-            $context = call_user_func($this->context['responses'], $response, $request, $direction) ?: [];
-            $this->logger->log($this->level, $message, ['id' => $entry->id(), 'duration' => $duration] + $context);
+        // Ensure the reference in the object map is removed.
+        unset($this->startedAt[$request]);
+
+        // Only log the response if responses should be logged.
+        if (call_user_func($this->enabled['responses'], $logEntry)) {
+            $this->logger->log(
+                $this->level,
+                call_user_func($this->messages['responses'], $logEntry),
+                call_user_func($this->context['responses'], $logEntry) ?: []
+            );
         }
     }
 }
