@@ -234,7 +234,8 @@ class Logger
      */
     public function response(RequestLogEntry $request, $response): void
     {
-        $logEntry = new ResponseLogEntry($request, $response, $this->startedAt[$request] ?? null);
+        $duration = isset($this->startedAt[$request]) ? microtime(true) - $this->startedAt[$request] : null;
+        $logEntry = new ResponseLogEntry($request, $response, $duration);
 
         // Ensure the reference in the object map is removed.
         unset($this->startedAt[$request]);

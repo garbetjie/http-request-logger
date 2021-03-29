@@ -12,6 +12,7 @@ use SplObjectStorage;
 use function array_column;
 use function base64_encode;
 use function random_bytes;
+use function usleep;
 
 class LoggerTest extends TestCase
 {
@@ -28,12 +29,28 @@ class LoggerTest extends TestCase
     protected $handler;
 
     // TODO Ensure that custom log levels are respected.
-    // TODO Ensure that duration is correct.
 
     protected function setUp(): void
     {
         $this->handler = new ArrayMonologHandler();
         $this->logger = new Logger(new Monolog('test', [$this->handler]));
+    }
+
+    public function testDurationIsCalculatedCorrectly()
+    {
+        $request = $this->createPsrRequest();
+        $entry = $this->logger->request($request, Logger::DIRECTION_IN);
+
+        usleep(500000);
+        $this->logger->response($entry, $this->createPsrResponse());
+
+        $this->assertThat(
+            $this->handler->logs(1)['context']['duration'],
+            $this->logicalAnd(
+                $this->greaterThanOrEqual(0.5),
+                $this->lessThanOrEqual(0.6)
+            )
+        );
     }
 
     /**
