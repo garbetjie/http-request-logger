@@ -194,4 +194,14 @@ class LoggerTestDataProviders
             [Logger::DIRECTION_OUT],
         ];
     }
+
+    public function startedAtTrackingIsAlwaysEmptied(): array
+    {
+        return [
+            [true, true],
+            [true, false],
+            [false, true],
+            [false, false]
+        ];
+    }
 }

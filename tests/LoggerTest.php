@@ -7,6 +7,8 @@ use Garbetjie\Http\RequestLogging\RequestLogEntry;
 use Garbetjie\Http\RequestLogging\ResponseLogEntry;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
+use ReflectionProperty;
+use SplObjectStorage;
 use function array_column;
 use function base64_encode;
 use function random_bytes;
@@ -25,14 +27,38 @@ class LoggerTest extends TestCase
      */
     protected $handler;
 
-    // TODO Ensure that the startedAt SplObjectStorage object is empty after logging a request/response.
-    // TODO Ensure that message(), context() and enabled() receive RequestLogEntry|ResponseLogEntry.
     // TODO Ensure that custom log levels are respected.
+    // TODO Ensure that duration is correct.
 
     protected function setUp(): void
     {
         $this->handler = new ArrayMonologHandler();
         $this->logger = new Logger(new Monolog('test', [$this->handler]));
+    }
+
+    /**
+     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     *
+     * @param $requestsEnabled
+     * @param $responsesEnabled
+     * @throws \ReflectionException
+     */
+    public function testStartedAtTrackingIsAlwaysEmptied($requestsEnabled, $responsesEnabled)
+    {
+        $this->logger->enabled($requestsEnabled, $responsesEnabled);
+
+        $prop = new ReflectionProperty($this->logger, 'startedAt');
+        $prop->setAccessible(true);
+
+        $this->assertInstanceOf(SplObjectStorage::class, $prop->getValue($this->logger));
+        $this->assertCount(0, $prop->getValue($this->logger));
+
+        $this->logger->response(
+            $this->logger->request($this->createPsrRequest(), Logger::DIRECTION_IN),
+            $this->createPsrResponse(),
+        );
+
+        $this->assertCount(0, $prop->getValue($this->logger));
     }
 
     /**
