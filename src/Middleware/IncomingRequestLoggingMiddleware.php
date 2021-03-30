@@ -3,12 +3,12 @@
 namespace Garbetjie\Http\RequestLogging\Middleware;
 
 use Closure;
-use Illuminate\Http\Request as LaravelRequest;
-use Illuminate\Http\Response as LaravelResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareInterface
 {
@@ -31,9 +31,9 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
     /**
      * Laravel middleware handler.
      *
-     * @param LaravelRequest $request
+     * @param SymfonyRequest $request
      * @param Closure $next
-     * @return LaravelResponse|mixed
+     * @return SymfonyResponse|mixed
      */
     public function handle($request, Closure $next)
     {

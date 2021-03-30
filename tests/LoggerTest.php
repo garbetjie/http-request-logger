@@ -218,17 +218,17 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(
             RequestLogEntry::class,
-            $this->logger->request($this->createLaravelRequest(), Logger::DIRECTION_IN)
+            $this->logger->request($this->createSymfonyRequest(), Logger::DIRECTION_IN)
         );
     }
 
     public function testReturnValueWhenLoggingResponse()
     {
-        $request = $this->createLaravelRequest();
+        $request = $this->createSymfonyRequest();
         $logged = $this->logger->request($request, Logger::DIRECTION_IN);
 
         $this->assertNull(
-            $this->logger->response($logged, $this->createLaravelResponse())
+            $this->logger->response($logged, $this->createSymfonyResponse())
         );
     }
 
@@ -243,8 +243,8 @@ class LoggerTest extends TestCase
         );
 
         $this->logger->response(
-            $this->logger->request($this->createLaravelRequest(), $this->logger::DIRECTION_IN),
-            $this->createLaravelResponse(),
+            $this->logger->request($this->createSymfonyRequest(), $this->logger::DIRECTION_IN),
+            $this->createSymfonyResponse(),
         );
 
         $this->assertEquals($id, $this->handler->logs(0)['context']['id']);
@@ -314,8 +314,8 @@ class LoggerTest extends TestCase
         );
 
         $this->logger->response(
-            $this->logger->request($this->createLaravelRequest(), $direction),
-            $this->createLaravelResponse(),
+            $this->logger->request($this->createSymfonyRequest(), $direction),
+            $this->createSymfonyResponse(),
         );
 
         $this->assertArrayHasKey('message', $this->handler->logs(0));
@@ -343,8 +343,8 @@ class LoggerTest extends TestCase
         callable $resMessage,
         array $expectedMessages
     ) {
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
+        $request = $this->createSymfonyRequest();
+        $response = $this->createSymfonyResponse();
 
         $this->logger->enabled($requestToggle, $responseToggle);
         $this->logger->message($reqMessage, $resMessage);
@@ -399,8 +399,8 @@ class LoggerTest extends TestCase
             },
         );
 
-        $request = $this->createLaravelRequest();
-        $response = $this->createLaravelResponse();
+        $request = $this->createSymfonyRequest();
+        $response = $this->createSymfonyResponse();
 
         $this->logger->response(
             $this->logger->request($request, $direction),

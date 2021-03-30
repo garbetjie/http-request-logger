@@ -20,9 +20,9 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromLaravel(RequestLogEntry $entry): array
+    protected function contextFromSymfony(RequestLogEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromLaravel($entry));
+        return $this->makeSafe(parent::contextFromSymfony($entry));
     }
 
     /**

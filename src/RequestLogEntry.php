@@ -2,9 +2,9 @@
 
 namespace Garbetjie\Http\RequestLogging;
 
-use Illuminate\Http\Request as LaravelRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use function strtolower;
 
 final class RequestLogEntry
@@ -20,12 +20,12 @@ final class RequestLogEntry
     protected $direction;
 
     /**
-     * @var RequestInterface|ServerRequestInterface|LaravelRequest
+     * @var RequestInterface|ServerRequestInterface|SymfonyRequest
      */
     protected $request;
 
     /**
-     * @param RequestInterface|ServerRequestInterface|LaravelRequest|string $request
+     * @param RequestInterface|ServerRequestInterface|SymfonyRequest|string $request
      * @param string $id
      * @param string $direction
      */
@@ -37,7 +37,7 @@ final class RequestLogEntry
     }
 
     /**
-     * @return LaravelRequest|RequestInterface|ServerRequestInterface|string
+     * @return SymfonyRequest|RequestInterface|ServerRequestInterface|string
      */
     public function request()
     {

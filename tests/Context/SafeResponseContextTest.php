@@ -23,8 +23,8 @@ class SafeResponseContextTest extends TestCase
     public function testLaravelResponseValuesAreMasked()
     {
         $this->assertHeadersAreMasked(
-            $this->createLaravelRequest(),
-            $this->createLaravelResponse()
+            $this->createSymfonyRequest(),
+            $this->createSymfonyResponse()
         );
     }
 

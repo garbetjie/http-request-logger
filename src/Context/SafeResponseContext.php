@@ -26,9 +26,9 @@ class SafeResponseContext extends ResponseContext
      * @param ResponseLogEntry $entry
      * @return array
      */
-    protected function contextFromLaravel(ResponseLogEntry $entry): array
+    protected function contextFromSymfony(ResponseLogEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromLaravel($entry));
+        return $this->makeSafe(parent::contextFromSymfony($entry));
     }
 
     /**

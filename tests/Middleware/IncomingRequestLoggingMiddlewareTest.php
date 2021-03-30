@@ -71,9 +71,9 @@ class IncomingRequestLoggingMiddlewareTest extends TestCase
     public function testLaravelRequestHandling()
     {
         $this->middleware->handle(
-            $this->createLaravelRequest(),
+            $this->createSymfonyRequest(),
             function() {
-                return $this->createLaravelResponse();
+                return $this->createSymfonyResponse();
             }
         );
 

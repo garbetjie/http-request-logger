@@ -44,8 +44,8 @@ class ResponseContextTest extends TestCase
     {
         $context = (new ResponseContext())->__invoke(
             new ResponseLogEntry(
-                new RequestLogEntry($this->createLaravelRequest(), 'id', Logger::DIRECTION_IN),
-                $this->createLaravelResponse(),
+                new RequestLogEntry($this->createSymfonyRequest(), 'id', Logger::DIRECTION_IN),
+                $this->createSymfonyResponse(),
                 1,
             )
         );

@@ -3,11 +3,11 @@
 namespace Garbetjie\Http\RequestLogging;
 
 use GuzzleHttp\Promise\PromiseInterface;
-use Illuminate\Http\Request as LaravelRequest;
-use Illuminate\Http\Response as LaravelResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final class ResponseLogEntry
 {
@@ -22,12 +22,12 @@ final class ResponseLogEntry
     protected $duration;
 
     /**
-     * @var LaravelRequest|RequestInterface|ServerRequestInterface
+     * @var SymfonyRequest|RequestInterface|ServerRequestInterface
      */
     protected $request;
 
     /**
-     * @var LaravelResponse|ResponseInterface|string
+     * @var SymfonyResponse|ResponseInterface|string
      */
     protected $response;
 
@@ -38,7 +38,7 @@ final class ResponseLogEntry
 
     /**
      * @param RequestLogEntry $request
-     * @param ResponseInterface|LaravelResponse|string $response
+     * @param ResponseInterface|SymfonyResponse|string $response
      * @param float|null $duration
      */
     public function __construct(RequestLogEntry $request, $response, ?float $duration)
@@ -67,7 +67,7 @@ final class ResponseLogEntry
     }
 
     /**
-     * @return LaravelRequest|RequestInterface|ServerRequestInterface|string
+     * @return SymfonyRequest|RequestInterface|ServerRequestInterface|string
      */
     public function request()
     {
@@ -75,7 +75,7 @@ final class ResponseLogEntry
     }
 
     /**
-     * @return LaravelResponse|ResponseInterface|PromiseInterface|string
+     * @return SymfonyResponse|ResponseInterface|PromiseInterface|string
      */
     public function response()
     {

@@ -4,8 +4,6 @@ namespace Garbetjie\Http\RequestLogging;
 
 use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
 use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
-use Illuminate\Http\Request as LaravelRequest;
-use Illuminate\Http\Response as LaravelResponse;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -13,6 +11,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use SplObjectStorage;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use function call_user_func;
 use function in_array;
 use function is_callable;
@@ -187,7 +187,7 @@ class Logger
     }
 
     /**
-     * @param RequestInterface|LaravelRequest|ServerRequestInterface|string $request
+     * @param RequestInterface|SymfonyRequest|ServerRequestInterface|string $request
      * @param string $direction
      *
      * @return RequestLogEntry
@@ -228,7 +228,7 @@ class Logger
 
     /**
      * @param RequestLogEntry $request
-     * @param ResponseInterface|LaravelResponse|string $response
+     * @param ResponseInterface|SymfonyResponse|string $response
      *
      * @return void
      */

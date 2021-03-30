@@ -44,7 +44,7 @@ class RequestContextTest extends TestCase
     public function testIncomingLaravelRequest()
     {
         $context = (new RequestContext())->__invoke(
-            new RequestLogEntry($this->createLaravelRequest(), 'id', Logger::DIRECTION_IN)
+            new RequestLogEntry($this->createSymfonyRequest(), 'id', Logger::DIRECTION_IN)
         );
 
         $this->assertContextHasRequiredKeys($context);
