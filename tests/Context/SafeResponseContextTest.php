@@ -4,8 +4,8 @@ namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
 use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
 use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
-use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\RequestEntry;
+use Garbetjie\Http\RequestLogging\ResponseEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use PHPUnit\Framework\TestCase;
@@ -48,8 +48,8 @@ class SafeResponseContextTest extends TestCase
     {
         $extractor = new SafeResponseContext();
         $context = $extractor(
-            new ResponseLogEntry(
-                new RequestLogEntry($request, 'id', Logger::DIRECTION_IN),
+            new ResponseEntry(
+                new RequestEntry($request, 'id', Logger::DIRECTION_IN),
                 $response,
                 1
             )

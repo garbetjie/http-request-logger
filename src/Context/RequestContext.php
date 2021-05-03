@@ -2,7 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
+use Garbetjie\Http\RequestLogging\RequestEntry;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,12 +30,12 @@ class RequestContext
     }
 
     /**
-     * @param RequestLogEntry $entry
+     * @param RequestEntry $entry
      *
      * @return array
      * @throws InvalidArgumentException
      */
-    public function __invoke(RequestLogEntry $entry): array
+    public function __invoke(RequestEntry $entry): array
     {
         switch (true) {
             case $entry->request() instanceof SymfonyRequest:
@@ -59,10 +59,10 @@ class RequestContext
     /**
      * Extract context from the given request, using server variables.
      *
-     * @param RequestLogEntry $entry
+     * @param RequestEntry $entry
      * @return array
      */
-    protected function contextFromString(RequestLogEntry $entry): array
+    protected function contextFromString(RequestEntry $entry): array
     {
         $request = $entry->request();
         $headers = [];
@@ -98,10 +98,10 @@ class RequestContext
     /**
      * Extract context from a PSR-compliant request.
      *
-     * @param RequestLogEntry $entry
+     * @param RequestEntry $entry
      * @return array
      */
-    protected function contextFromPSR(RequestLogEntry $entry): array
+    protected function contextFromPSR(RequestEntry $entry): array
     {
         $request = $entry->request();
 
@@ -123,10 +123,10 @@ class RequestContext
     /**
      * Extract context from a Symfony request (includes Laravel).
      *
-     * @param RequestLogEntry $entry
+     * @param RequestEntry $entry
      * @return array
      */
-    protected function contextFromSymfony(RequestLogEntry $entry): array
+    protected function contextFromSymfony(RequestEntry $entry): array
     {
         $request = $entry->request();
         $content = $request->getContent();

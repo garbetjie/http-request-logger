@@ -3,8 +3,8 @@
 namespace Garbetjie\Http\RequestLogging\Tests;
 
 use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
-use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\RequestEntry;
+use Garbetjie\Http\RequestLogging\ResponseEntry;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -113,13 +113,13 @@ class LoggerTest extends TestCase
                 $called++;
 
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+                $this->assertInstanceOf(RequestEntry::class, $args[0]);
             },
             function (...$args) use (&$called) {
                 $called++;
 
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+                $this->assertInstanceOf(ResponseEntry::class, $args[0]);
             }
         );
 
@@ -147,13 +147,13 @@ class LoggerTest extends TestCase
                 $called++;
 
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+                $this->assertInstanceOf(RequestEntry::class, $args[0]);
             },
             function (...$args) use (&$called) {
                 $called++;
 
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+                $this->assertInstanceOf(ResponseEntry::class, $args[0]);
             }
         );
 
@@ -181,7 +181,7 @@ class LoggerTest extends TestCase
                 $called++;
 
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+                $this->assertInstanceOf(RequestEntry::class, $args[0]);
 
                 return true;
             },
@@ -189,7 +189,7 @@ class LoggerTest extends TestCase
                 $called++;
 
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+                $this->assertInstanceOf(ResponseEntry::class, $args[0]);
 
                 return true;
             }
@@ -217,7 +217,7 @@ class LoggerTest extends TestCase
     public function testReturnValueWhenLoggingRequest()
     {
         $this->assertInstanceOf(
-            RequestLogEntry::class,
+            RequestEntry::class,
             $this->logger->request($this->createSymfonyRequest(), Logger::DIRECTION_IN)
         );
     }
@@ -305,10 +305,10 @@ class LoggerTest extends TestCase
         $message = base64_encode(random_bytes(16));
 
         $this->logger->message(
-            function (RequestLogEntry $logEntry) use ($message) {
+            function (RequestEntry $logEntry) use ($message) {
                 return "request:{$logEntry->direction()}:{$message}";
             },
-            function (ResponseLogEntry $logEntry) use ($message) {
+            function (ResponseEntry $logEntry) use ($message) {
                 return "response:{$logEntry->direction()}:{$message}";
             },
         );
@@ -387,13 +387,13 @@ class LoggerTest extends TestCase
         $this->logger->message(
             function(...$args) {
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+                $this->assertInstanceOf(RequestEntry::class, $args[0]);
 
                 return '';
             },
             function(...$args) {
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+                $this->assertInstanceOf(ResponseEntry::class, $args[0]);
 
                 return '';
             },
@@ -420,13 +420,13 @@ class LoggerTest extends TestCase
         $this->logger->enabled(
             function(...$args) {
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+                $this->assertInstanceOf(RequestEntry::class, $args[0]);
 
                 return [];
             },
             function(...$args) {
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+                $this->assertInstanceOf(ResponseEntry::class, $args[0]);
 
                 return [];
             }
@@ -451,13 +451,13 @@ class LoggerTest extends TestCase
         $this->logger->context(
             function(...$args) {
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(RequestLogEntry::class, $args[0]);
+                $this->assertInstanceOf(RequestEntry::class, $args[0]);
 
                 return [];
             },
             function(...$args) {
                 $this->assertCount(1, $args);
-                $this->assertInstanceOf(ResponseLogEntry::class, $args[0]);
+                $this->assertInstanceOf(ResponseEntry::class, $args[0]);
 
                 return [];
             }

@@ -4,8 +4,8 @@ namespace Garbetjie\Http\RequestLogging\Tests\Context;
 
 use Garbetjie\Http\RequestLogging\Context\ResponseContext;
 use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
-use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\RequestEntry;
+use Garbetjie\Http\RequestLogging\ResponseEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use PHPUnit\Framework\TestCase;
@@ -29,8 +29,8 @@ class ResponseContextTest extends TestCase
     public function testPsrResponse()
     {
         $context = (new ResponseContext())->__invoke(
-            new ResponseLogEntry(
-                new RequestLogEntry($this->createPsrRequest(), 'id', Logger::DIRECTION_IN),
+            new ResponseEntry(
+                new RequestEntry($this->createPsrRequest(), 'id', Logger::DIRECTION_IN),
                 $this->createPsrResponse(),
                 1,
             )
@@ -43,8 +43,8 @@ class ResponseContextTest extends TestCase
     public function testLaravelResponse()
     {
         $context = (new ResponseContext())->__invoke(
-            new ResponseLogEntry(
-                new RequestLogEntry($this->createSymfonyRequest(), 'id', Logger::DIRECTION_IN),
+            new ResponseEntry(
+                new RequestEntry($this->createSymfonyRequest(), 'id', Logger::DIRECTION_IN),
                 $this->createSymfonyResponse(),
                 1,
             )
@@ -57,8 +57,8 @@ class ResponseContextTest extends TestCase
     public function testStringResponse()
     {
         $context = (new ResponseContext())->__invoke(
-            new ResponseLogEntry(
-                new RequestLogEntry($this->createStringRequest(), 'id', Logger::DIRECTION_IN),
+            new ResponseEntry(
+                new RequestEntry($this->createStringRequest(), 'id', Logger::DIRECTION_IN),
                 $this->createStringResponse(),
                 1
             ),

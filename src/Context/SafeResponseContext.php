@@ -2,7 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
-use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\ResponseEntry;
 
 class SafeResponseContext extends ResponseContext
 {
@@ -12,10 +12,10 @@ class SafeResponseContext extends ResponseContext
     /**
      * Extract context from a PSR-compliant response.
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromPSR(ResponseLogEntry $entry): array
+    protected function contextFromPSR(ResponseEntry $entry): array
     {
         return $this->makeSafe(parent::contextFromPSR($entry));
     }
@@ -23,10 +23,10 @@ class SafeResponseContext extends ResponseContext
     /**
      * Extract context from a Laravel response.
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromSymfony(ResponseLogEntry $entry): array
+    protected function contextFromSymfony(ResponseEntry $entry): array
     {
         return $this->makeSafe(parent::contextFromSymfony($entry));
     }
@@ -34,10 +34,10 @@ class SafeResponseContext extends ResponseContext
     /**
      * Extract context from the given response, using server variables.
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromString(ResponseLogEntry $entry): array
+    protected function contextFromString(ResponseEntry $entry): array
     {
         return $this->makeSafe(parent::contextFromString($entry));
     }

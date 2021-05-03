@@ -2,7 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
+use Garbetjie\Http\RequestLogging\RequestEntry;
 
 class SafeRequestContext extends RequestContext
 {
@@ -12,7 +12,7 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromPSR(RequestLogEntry $entry): array
+    protected function contextFromPSR(RequestEntry $entry): array
     {
         return $this->makeSafe(parent::contextFromPSR($entry));
     }
@@ -20,7 +20,7 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromSymfony(RequestLogEntry $entry): array
+    protected function contextFromSymfony(RequestEntry $entry): array
     {
         return $this->makeSafe(parent::contextFromSymfony($entry));
     }
@@ -28,7 +28,7 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromString(RequestLogEntry $entry): array
+    protected function contextFromString(RequestEntry $entry): array
     {
         return $this->makeSafe(parent::contextFromString($entry));
     }

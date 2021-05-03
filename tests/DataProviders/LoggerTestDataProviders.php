@@ -3,8 +3,8 @@
 namespace Garbetjie\Http\RequestLogging\Tests\DataProviders;
 
 use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestLogEntry;
-use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\RequestEntry;
+use Garbetjie\Http\RequestLogging\ResponseEntry;
 use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
 use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
 use Psr\Log\LogLevel;
@@ -53,11 +53,11 @@ class LoggerTestDataProviders
             return false;
         };
 
-        $reqMessage = function(RequestLogEntry $entry) {
+        $reqMessage = function(RequestEntry $entry) {
             return "request:{$entry->direction()}";
         };
 
-        $resMessage = function (ResponseLogEntry $entry) {
+        $resMessage = function (ResponseEntry $entry) {
             return "response:{$entry->direction()}";
         };
 
@@ -86,7 +86,7 @@ class LoggerTestDataProviders
 
     public function contextCanBeCustomised(): array
     {
-        $requestExtractor = function(RequestLogEntry $logEntry) {
+        $requestExtractor = function(RequestEntry $logEntry) {
             $request = $logEntry->request();
 
             return [
@@ -96,7 +96,7 @@ class LoggerTestDataProviders
             ];
         };
 
-        $responseExtractor = function(ResponseLogEntry $logEntry) {
+        $responseExtractor = function(ResponseEntry $logEntry) {
             $request = $logEntry->request();
             $response = $logEntry->response();
 

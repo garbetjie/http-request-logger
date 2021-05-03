@@ -2,7 +2,7 @@
 
 namespace Garbetjie\Http\RequestLogging\Context;
 
-use Garbetjie\Http\RequestLogging\ResponseLogEntry;
+use Garbetjie\Http\RequestLogging\ResponseEntry;
 use GuzzleHttp\Promise\PromiseInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -28,12 +28,12 @@ class ResponseContext
     }
 
     /**
-     * @param ResponseLogEntry $entry
-     * @throws InvalidArgumentException
-     *
+     * @param ResponseEntry $entry
      * @return array
+     *@throws InvalidArgumentException
+     *
      */
-    public function __invoke(ResponseLogEntry $entry): array
+    public function __invoke(ResponseEntry $entry): array
     {
         switch (true) {
             case $entry->response() instanceof ResponseInterface:
@@ -61,10 +61,10 @@ class ResponseContext
     /**
      * Extract context from the given response, using server variables.
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromString(ResponseLogEntry $entry): array
+    protected function contextFromString(ResponseEntry $entry): array
     {
         $response = $entry->response();
         $headers = [];
@@ -93,10 +93,10 @@ class ResponseContext
     /**
      * Extract context from a PSR-compliant response.
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromPSR(ResponseLogEntry $entry): array
+    protected function contextFromPSR(ResponseEntry $entry): array
     {
         $response = $entry->response();
 
@@ -118,10 +118,10 @@ class ResponseContext
     /**
      * Extract context from a Guzzle promise.
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromPromise(ResponseLogEntry $entry): array
+    protected function contextFromPromise(ResponseEntry $entry): array
     {
         return $this->contextFromPSR(
             $entry->response()->wait(true)
@@ -131,10 +131,10 @@ class ResponseContext
     /**
      * Extract context from a Symfony response (includes Laravel).
      *
-     * @param ResponseLogEntry $entry
+     * @param ResponseEntry $entry
      * @return array
      */
-    protected function contextFromSymfony(ResponseLogEntry $entry): array
+    protected function contextFromSymfony(ResponseEntry $entry): array
     {
         $response = $entry->response();
         $body = $response->getContent();

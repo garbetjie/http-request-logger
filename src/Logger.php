@@ -78,13 +78,13 @@ class Logger
 
         // Set default message handler.
         $this->message(
-            function (RequestLogEntry $entry) {
+            function (RequestEntry $entry) {
                 return [
                     Logger::DIRECTION_IN => 'http request received',
                     Logger::DIRECTION_OUT => 'http request sent',
                 ][$entry->direction()];
             },
-            function (ResponseLogEntry $entry) {
+            function (ResponseEntry $entry) {
                 return [
                     Logger::DIRECTION_IN => 'http response received',
                     Logger::DIRECTION_OUT => 'http response sent',
@@ -190,9 +190,9 @@ class Logger
      * @param RequestInterface|SymfonyRequest|ServerRequestInterface|string $request
      * @param string $direction
      *
-     * @return RequestLogEntry
+     * @return RequestEntry
      */
-    public function request($request, string $direction): RequestLogEntry
+    public function request($request, string $direction): RequestEntry
     {
         $direction = strtolower($direction);
 
@@ -202,7 +202,7 @@ class Logger
         }
 
         // Create the request's log entry.
-        $logEntry = new RequestLogEntry(
+        $logEntry = new RequestEntry(
             $request,
             call_user_func($this->id),
             $direction
@@ -227,15 +227,15 @@ class Logger
     }
 
     /**
-     * @param RequestLogEntry $request
+     * @param RequestEntry $request
      * @param ResponseInterface|SymfonyResponse|string $response
      *
      * @return void
      */
-    public function response(RequestLogEntry $request, $response): void
+    public function response(RequestEntry $request, $response): void
     {
         $duration = isset($this->startedAt[$request]) ? microtime(true) - $this->startedAt[$request] : null;
-        $logEntry = new ResponseLogEntry($request, $response, $duration);
+        $logEntry = new ResponseEntry($request, $response, $duration);
 
         // Ensure the reference in the object map is removed.
         unset($this->startedAt[$request]);

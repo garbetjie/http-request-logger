@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-final class ResponseLogEntry
+final class ResponseEntry
 {
     /**
      * @var string
@@ -37,11 +37,11 @@ final class ResponseLogEntry
     protected $direction;
 
     /**
-     * @param RequestLogEntry $request
+     * @param RequestEntry $request
      * @param ResponseInterface|SymfonyResponse|string $response
      * @param float|null $duration
      */
-    public function __construct(RequestLogEntry $request, $response, ?float $duration)
+    public function __construct(RequestEntry $request, $response, ?float $duration)
     {
         $this->id = $request->id();
         $this->duration = $duration;

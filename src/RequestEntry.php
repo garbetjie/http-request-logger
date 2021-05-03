@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use function strtolower;
 
-final class RequestLogEntry
+final class RequestEntry
 {
     /**
      * @var string
