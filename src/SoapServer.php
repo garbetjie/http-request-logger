@@ -30,7 +30,7 @@ class SoapServer extends \SoapServer
         // Handle the request.
         parent::handle($request);
 
-        // Get the response.
+        // Get & flush the response.
         $body = ob_get_flush();
 
         $this->logger->response($entry, $body);
