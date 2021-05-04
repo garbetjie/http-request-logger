@@ -1,0 +1,19 @@
+on: push
+jobs:
+  tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        LARAVEL_VERSION: [6.0, 7.0, 8.0]
+        PHP_VERSION: [7.3, 7.4, 8.0]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.PHP_VERSION }}
+        tools: composer:v2
+        coverage: xdebug
+    - run: php -v
+    - run: composer require "laravel/framework:^${{ matrix.LARAVEL_VERSION }}" --no-update
+    - run: composer update --prefer-source --no-interaction
+    - run: ./vendor/bin/phpunit
