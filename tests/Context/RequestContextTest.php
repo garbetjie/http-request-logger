@@ -14,6 +14,9 @@ class RequestContextTest extends TestCase
 {
     use CreatesRequests;
 
+    /**
+     * @covers \Garbetjie\RequestLogging\Http\Context\RequestContext::__construct
+     */
     public function testIsCallable()
     {
         $this->assertIsCallable(new RequestContext());
