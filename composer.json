@@ -24,7 +24,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Garbetjie\\Http\\RequestLogging\\LaravelServiceProvider"
+                "Garbetjie\\RequestLogging\\Http\\LaravelServiceProvider"
             ]
         }
     },
