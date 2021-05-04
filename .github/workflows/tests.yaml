@@ -16,5 +16,5 @@ jobs:
     - run: php -v
     - run: composer -V
     - run: composer require "laravel/framework:^${{ matrix.LARAVEL_VERSION }}" --no-update
-    - run: composer update --prefer-source --no-interaction
+    - run: composer install
     - run: ./vendor/bin/phpunit
