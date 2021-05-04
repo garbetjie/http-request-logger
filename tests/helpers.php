@@ -1,25 +1,8 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Context {
+namespace Garbetjie\RequestLogging\Http\Context {
 
-    use Garbetjie\Http\RequestLogging\Tests\HeaderBag;
-
-    function header(string $name) {
-        HeaderBag::add($name);
-    }
-
-    function headers_list(): array {
-        return HeaderBag::list();
-    }
-
-    function header_remove() {
-        HeaderBag::clear();
-    }
-}
-
-namespace Garbetjie\Http\RequestLogging\Tests\Context {
-
-    use Garbetjie\Http\RequestLogging\Tests\HeaderBag;
+    use Garbetjie\RequestLogging\Http\Tests\HeaderBag;
 
     function header(string $name) {
         HeaderBag::add($name);
@@ -34,7 +17,24 @@ namespace Garbetjie\Http\RequestLogging\Tests\Context {
     }
 }
 
-namespace Garbetjie\Http\RequestLogging\Tests {
+namespace Garbetjie\RequestLogging\Http\Tests\Context {
+
+    use Garbetjie\RequestLogging\Http\Tests\HeaderBag;
+
+    function header(string $name) {
+        HeaderBag::add($name);
+    }
+
+    function headers_list(): array {
+        return HeaderBag::list();
+    }
+
+    function header_remove() {
+        HeaderBag::clear();
+    }
+}
+
+namespace Garbetjie\RequestLogging\Http\Tests {
     function header(string $name) {
         HeaderBag::add($name);
     }

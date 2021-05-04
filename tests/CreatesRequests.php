@@ -1,12 +1,11 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
 use GuzzleHttp\Psr7\Request as PsrRequest;
 use GuzzleHttp\Psr7\ServerRequest as PsrServerRequest;
 use Illuminate\Http\Request as LaravelRequest;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-
 
 trait CreatesRequests
 {

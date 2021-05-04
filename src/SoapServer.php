@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http;
 
 use function ob_get_flush;
 use function ob_start;

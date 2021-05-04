@@ -1,11 +1,11 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests\Context;
+namespace Garbetjie\RequestLogging\Http\Tests\Context;
 
-use Garbetjie\Http\RequestLogging\Context\RequestContext;
-use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestEntry;
-use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
+use Garbetjie\RequestLogging\Http\Context\RequestContext;
+use Garbetjie\RequestLogging\Http\Logger;
+use Garbetjie\RequestLogging\Http\RequestEntry;
+use Garbetjie\RequestLogging\Http\Tests\CreatesRequests;
 use PHPUnit\Framework\TestCase;
 use function base64_encode;
 use function strlen;

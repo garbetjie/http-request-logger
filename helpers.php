@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http;
 
 use EndyJasmi\Cuid;
 use function implode;

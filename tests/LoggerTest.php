@@ -1,10 +1,10 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
-use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestEntry;
-use Garbetjie\Http\RequestLogging\ResponseEntry;
+use Garbetjie\RequestLogging\Http\Logger;
+use Garbetjie\RequestLogging\Http\RequestEntry;
+use Garbetjie\RequestLogging\Http\ResponseEntry;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -35,7 +35,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::logLevelIsRespected()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::logLevelIsRespected()
      *
      * @param int|string $level
      * @param string $name
@@ -73,7 +73,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $requestsEnabled
      * @param $responsesEnabled
@@ -98,7 +98,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response
@@ -132,7 +132,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response
@@ -166,7 +166,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response
@@ -204,7 +204,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::returnValueWhenCustomising()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::returnValueWhenCustomising()
      *
      * @param string $method
      * @param array $args
@@ -252,7 +252,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::contextCanBeCustomised()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::contextCanBeCustomised()
      *
      * @param $request
      * @param $response
@@ -292,7 +292,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::messageCanBeCustomised()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::messageCanBeCustomised()
      *
      * @param string $direction
      * @param string $expectedRequestPrefix
@@ -326,7 +326,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::enabledCanBeCustomised()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::enabledCanBeCustomised()
      *
      * @param callable|bool $requestToggle
      * @param callable|bool $responseToggle
@@ -359,7 +359,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response
@@ -378,7 +378,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::messageCallableArguments()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::messageCallableArguments()
      *
      * @param string $direction
      */
@@ -409,7 +409,7 @@ class LoggerTest extends TestCase
     }
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response
@@ -440,7 +440,7 @@ class LoggerTest extends TestCase
 
 
     /**
-     * @dataProvider \Garbetjie\Http\RequestLogging\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
+     * @dataProvider \Garbetjie\RequestLogging\Http\Tests\DataProviders\LoggerTestDataProviders::requestResponseAndDirection()
      *
      * @param $request
      * @param $response

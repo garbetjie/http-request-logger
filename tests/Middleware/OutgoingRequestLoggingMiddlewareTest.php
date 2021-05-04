@@ -1,12 +1,12 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests\Middleware;
+namespace Garbetjie\RequestLogging\Http\Tests\Middleware;
 
-use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\Middleware\OutgoingRequestLoggingMiddleware;
-use Garbetjie\Http\RequestLogging\Tests\ArrayMonologHandler;
-use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
-use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
+use Garbetjie\RequestLogging\Http\Logger;
+use Garbetjie\RequestLogging\Http\Middleware\OutgoingRequestLoggingMiddleware;
+use Garbetjie\RequestLogging\Http\Tests\ArrayMonologHandler;
+use Garbetjie\RequestLogging\Http\Tests\CreatesRequests;
+use Garbetjie\RequestLogging\Http\Tests\CreatesResponses;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;

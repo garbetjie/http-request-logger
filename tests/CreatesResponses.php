@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
 use GuzzleHttp\Psr7\Response as PsrResponse;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Middleware;
+namespace Garbetjie\RequestLogging\Http\Middleware;
 
 use Closure;
 use function method_exists;

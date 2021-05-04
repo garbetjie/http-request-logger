@@ -1,8 +1,8 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http;
 
-use Garbetjie\Http\RequestLogging\Middleware\OutgoingRequestLoggingMiddleware;
+use Garbetjie\RequestLogging\Http\Middleware\OutgoingRequestLoggingMiddleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\HandlerStack;

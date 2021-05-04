@@ -1,9 +1,9 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
-use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\SoapServer;
+use Garbetjie\RequestLogging\Http\Logger;
+use Garbetjie\RequestLogging\Http\SoapServer;
 use Monolog\Logger as Monolog;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;

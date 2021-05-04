@@ -11,13 +11,13 @@
     ],
     "autoload": {
         "psr-4": {
-            "Garbetjie\\Http\\RequestLogging\\": "src"
+            "Garbetjie\\RequestLogging\\Http\\": "src"
         },
         "files": ["helpers.php"]
     },
     "autoload-dev": {
         "psr-4": {
-            "Garbetjie\\Http\\RequestLogging\\Tests\\": "tests"
+            "Garbetjie\\RequestLogging\\Http\\Tests\\": "tests"
         },
         "files": ["tests/helpers.php"]
     },

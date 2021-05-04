@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Middleware;
+namespace Garbetjie\RequestLogging\Http\Middleware;
 
 use Closure;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;

@@ -1,14 +1,14 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Context;
+namespace Garbetjie\RequestLogging\Http\Context;
 
-use Garbetjie\Http\RequestLogging\RequestEntry;
+use Garbetjie\RequestLogging\Http\RequestEntry;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use function base64_encode;
-use function Garbetjie\Http\RequestLogging\normalize_headers;
+use function Garbetjie\RequestLogging\Http\normalize_headers;
 use function get_class;
 use function is_scalar;
 use function is_string;

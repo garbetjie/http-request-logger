@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http;
 
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\RequestInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;

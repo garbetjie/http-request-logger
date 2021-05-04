@@ -1,9 +1,9 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http;
 
-use Garbetjie\Http\RequestLogging\Context\SafeRequestContext;
-use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
+use Garbetjie\RequestLogging\Http\Context\SafeRequestContext;
+use Garbetjie\RequestLogging\Http\Context\SafeResponseContext;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

@@ -1,14 +1,14 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Context;
+namespace Garbetjie\RequestLogging\Http\Context;
 
-use Garbetjie\Http\RequestLogging\ResponseEntry;
+use Garbetjie\RequestLogging\Http\ResponseEntry;
 use GuzzleHttp\Promise\PromiseInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use function base64_encode;
-use function Garbetjie\Http\RequestLogging\normalize_headers;
+use function Garbetjie\RequestLogging\Http\normalize_headers;
 use function get_class;
 use function http_response_code;
 use function is_scalar;

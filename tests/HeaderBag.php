@@ -1,6 +1,6 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
 class HeaderBag
 {

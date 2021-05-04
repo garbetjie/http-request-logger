@@ -1,13 +1,13 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests\Context;
+namespace Garbetjie\RequestLogging\Http\Tests\Context;
 
-use Garbetjie\Http\RequestLogging\Context\SafeResponseContext;
-use Garbetjie\Http\RequestLogging\Logger;
-use Garbetjie\Http\RequestLogging\RequestEntry;
-use Garbetjie\Http\RequestLogging\ResponseEntry;
-use Garbetjie\Http\RequestLogging\Tests\CreatesRequests;
-use Garbetjie\Http\RequestLogging\Tests\CreatesResponses;
+use Garbetjie\RequestLogging\Http\Context\SafeResponseContext;
+use Garbetjie\RequestLogging\Http\Logger;
+use Garbetjie\RequestLogging\Http\RequestEntry;
+use Garbetjie\RequestLogging\Http\ResponseEntry;
+use Garbetjie\RequestLogging\Http\Tests\CreatesRequests;
+use Garbetjie\RequestLogging\Http\Tests\CreatesResponses;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Middleware;
+namespace Garbetjie\RequestLogging\Http\Middleware;
 
-use Garbetjie\Http\RequestLogging\Logger;
+use Garbetjie\RequestLogging\Http\Logger;
 
 abstract class Middleware
 {

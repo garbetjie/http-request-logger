@@ -1,8 +1,8 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Context;
+namespace Garbetjie\RequestLogging\Http\Context;
 
-use Garbetjie\Http\RequestLogging\ResponseEntry;
+use Garbetjie\RequestLogging\Http\ResponseEntry;
 
 class SafeResponseContext extends ResponseContext
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
-use Garbetjie\Http\RequestLogging\SoapClient;
+use Garbetjie\RequestLogging\Http\SoapClient;
 use GuzzleHttp\Client;
 use Monolog\Test\TestCase;
 use SoapClient as BaseSoapClient;
