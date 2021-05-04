@@ -1,14 +1,14 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging;
+namespace Garbetjie\RequestLogging\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareInterface
 {
@@ -21,9 +21,9 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        [$started, $id] = $this->logRequest($request, 'in');
+        $entry = $this->logger->request($request, $this->logger::DIRECTION_IN);
         $response = $handler->handle($request);
-        $this->logResponse($request, $response, $id, $started, 'in');
+        $this->logger->response($entry, $response);
 
         return $response;
     }
@@ -31,15 +31,15 @@ class IncomingRequestLoggingMiddleware extends Middleware implements MiddlewareI
     /**
      * Laravel middleware handler.
      *
-     * @param Request $request
+     * @param SymfonyRequest $request
      * @param Closure $next
-     * @return Response
+     * @return SymfonyResponse|mixed
      */
     public function handle($request, Closure $next)
     {
-        [$started, $id] = $this->logRequest($request, 'in');
+        $entry = $this->logger->request($request, $this->logger::DIRECTION_IN);
         $response = $next($request);
-        $this->logResponse($request, $response, $id, $started, 'in');
+        $this->logger->response($entry, $response);
 
         return $response;
     }

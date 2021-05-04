@@ -1,30 +1,45 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
+
+use GuzzleHttp\Psr7\Response as PsrResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 trait CreatesResponses
 {
-    protected function createPsrResponse()
+    protected function createPsrResponse(): PsrResponse
     {
-        return new \GuzzleHttp\Psr7\Response(
+        return new PsrResponse(
             200,
             [
-                'Content-Type' => 'custom',
+                'Content-Type' => 'application/json',
                 'Set-Cookie' => 'key=value',
+                'Authorization' => 'Bearer 123',
             ],
             'body'
         );
     }
 
-    protected function createLaravelResponse()
+    protected function createSymfonyResponse(): SymfonyResponse
     {
-        return new \Illuminate\Http\Response(
+        return new SymfonyResponse(
             'body',
             200,
             [
-                'Content-Type' => 'custom',
+                'Content-Type' => 'application/json',
                 'Set-Cookie' => 'key=value',
+                'Authorization' => 'Bearer 456',
             ]
         );
+    }
+
+    protected function createStringResponse(): string
+    {
+        header_remove();
+        header('Content-Type: custom');
+        header('Set-Cookie: key=value');
+        header('Authorization: Bearer 789');
+
+        return 'body';
     }
 }

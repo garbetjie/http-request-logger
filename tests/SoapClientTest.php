@@ -1,10 +1,11 @@
 <?php
 
-namespace Garbetjie\Http\RequestLogging\Tests;
+namespace Garbetjie\RequestLogging\Http\Tests;
 
-use Garbetjie\Http\RequestLogging\SoapClient;
+use Garbetjie\RequestLogging\Http\SoapClient;
 use GuzzleHttp\Client;
 use Monolog\Test\TestCase;
+use SoapClient as BaseSoapClient;
 
 class SoapClientTest extends TestCase
 {
@@ -13,6 +14,7 @@ class SoapClientTest extends TestCase
         $client = new SoapClient(new Client(), null, ['location' => '/', 'uri' => 'http://example.org']);
 
         $this->assertInstanceOf(SoapClient::class, $client);
+        $this->assertInstanceOf(BaseSoapClient::class, $client);
     }
 
     public function testCreateNewInstanceWithoutOptions()
@@ -20,5 +22,6 @@ class SoapClientTest extends TestCase
         $client = new SoapClient(new Client(), __DIR__ . '/wsdl.xml');
 
         $this->assertInstanceOf(SoapClient::class, $client);
+        $this->assertInstanceOf(BaseSoapClient::class, $client);
     }
 }

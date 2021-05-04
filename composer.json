@@ -11,14 +11,15 @@
     ],
     "autoload": {
         "psr-4": {
-            "Garbetjie\\Http\\RequestLogging\\": "src"
+            "Garbetjie\\RequestLogging\\Http\\": "src"
         },
-        "files": ["functions.php"]
+        "files": ["helpers.php"]
     },
     "autoload-dev": {
         "psr-4": {
-            "Garbetjie\\Http\\RequestLogging\\Tests\\": "tests"
-        }
+            "Garbetjie\\RequestLogging\\Http\\Tests\\": "tests"
+        },
+        "files": ["tests/helpers.php"]
     },
     "extra": {
         "laravel": {
@@ -39,7 +40,7 @@
         "ext-simplexml": "Required for logging SOAP requests."
     },
     "require-dev": {
-        "laravel/framework": "^6.0 || ^7.0 || ^8.0",
+        "laravel/framework": "^6.0 || >=7.30.4 <8.0 || >=8.40.0 <9.0",
         "guzzlehttp/guzzle": "*",
         "phpunit/phpunit": "^8.0 || ^9.0"
     },
