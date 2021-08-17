@@ -12,6 +12,7 @@ use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use SplObjectStorage;
+use WeakReference;
 
 class LaravelServiceProvider extends ServiceProvider
 {
@@ -20,9 +21,10 @@ class LaravelServiceProvider extends ServiceProvider
 	 */
     public function register()
     {
-        $this->registerGuzzleHandlerStackIfNotRegistered();
-        $this->registerGuzzleClientIfNotRegistered();
-        $this->registerGuzzleClientInterfaceIfNotRegistered();
+    	$this->registerGuzzleHandlerStack();
+    	$this->extendGuzzleHandlerStack();
+        $this->registerGuzzleClient();
+        $this->registerGuzzleClientInterface();
     }
 
 	/**
@@ -52,24 +54,26 @@ class LaravelServiceProvider extends ServiceProvider
 		Event::listen(
 			RequestSending::class,
 			static function(RequestSending $event) use ($logger, $requestEntryMap) {
-				$requestEntryMap[$event->request] = $logger->request($event->request);
+				$requestEntryMap[$event->request] = $logger->request($event->request->toPsrRequest(), $logger::DIRECTION_OUT);
 			}
 		);
 
 		Event::listen(
 			ResponseReceived::class,
 			static function (ResponseReceived $event) use ($logger, $requestEntryMap) {
-				$logger->response($requestEntryMap[$event->request], $event->response);
+				$logger->response($requestEntryMap[$event->request], $event->response->toPsrResponse());
+
+				unset($requestEntryMap[$event->request]);
 			}
 		);
 	}
 
-    protected function registerGuzzleClientInterfaceIfNotRegistered()
+    protected function registerGuzzleClientInterface()
     {
         $this->app->bindIf(ClientInterface::class, Client::class);
     }
 
-    protected function registerGuzzleClientIfNotRegistered()
+    protected function registerGuzzleClient()
     {
         $this->app->bindIf(
             Client::class,
@@ -79,18 +83,25 @@ class LaravelServiceProvider extends ServiceProvider
         );
     }
 
-    protected function registerGuzzleHandlerStackIfNotRegistered()
+    protected function registerGuzzleHandlerStack()
     {
         $this->app->bindIf(
             HandlerStack::class,
             function (Container $container) {
-                $middleware = $container->make(OutgoingRequestLoggingMiddleware::class);
-
-                $stack = HandlerStack::create();
-                $stack->push($middleware, 'garbetjie/http-request-logger');
-
-                return $stack;
+            	return HandlerStack::create();
             }
         );
     }
+
+    protected function extendGuzzleHandlerStack()
+	{
+		$this->app->extend(
+			HandlerStack::class,
+			function (HandlerStack $stack, Container $container) {
+				$stack->push($container->make(OutgoingRequestLoggingMiddleware::class), 'garbetjie/http-request-logger');
+
+				return $stack;
+			}
+		);
+	}
 }
