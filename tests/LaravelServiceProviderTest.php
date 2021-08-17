@@ -69,6 +69,13 @@ class LaravelServiceProviderTest extends TestCase
 		$this->assertEquals(2, substr_count($stack, 'garbetjie/http-request-logger'));
 	}
 
+	public function testProviderIsInComposerJson()
+	{
+		$json = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
+
+		$this->assertContains(LaravelServiceProvider::class, $json->extra->laravel->providers);
+	}
+
 	public function testGuzzleMiddlewareIsInCustomStack()
 	{
 		$defaultStack = $this->app->get(HandlerStack::class);
