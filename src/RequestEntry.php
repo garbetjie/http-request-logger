@@ -2,6 +2,7 @@
 
 namespace Garbetjie\RequestLogging\Http;
 
+use Illuminate\Http\Client\Request as LaravelHttpClientRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
@@ -20,12 +21,12 @@ final class RequestEntry
     protected $direction;
 
     /**
-     * @var RequestInterface|ServerRequestInterface|SymfonyRequest
+     * @var LaravelHttpClientRequest|RequestInterface|ServerRequestInterface|SymfonyRequest
      */
     protected $request;
 
     /**
-     * @param RequestInterface|ServerRequestInterface|SymfonyRequest|string $request
+     * @param LaravelHttpClientRequest|RequestInterface|ServerRequestInterface|SymfonyRequest|string $request
      * @param string $id
      * @param string $direction
      */
@@ -37,7 +38,7 @@ final class RequestEntry
     }
 
     /**
-     * @return SymfonyRequest|RequestInterface|ServerRequestInterface|string
+     * @return LaravelHttpClientRequest|SymfonyRequest|RequestInterface|ServerRequestInterface|string
      */
     public function request()
     {
