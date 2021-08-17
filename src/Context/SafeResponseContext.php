@@ -3,6 +3,8 @@
 namespace Garbetjie\RequestLogging\Http\Context;
 
 use Garbetjie\RequestLogging\Http\ResponseEntry;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class SafeResponseContext extends ResponseContext
 {
@@ -10,44 +12,32 @@ class SafeResponseContext extends ResponseContext
     protected $replacement = '***';
 
     /**
-     * Extract context from a PSR-compliant response.
-     *
-     * @param ResponseEntry $entry
-     * @return array
-     */
-    protected function contextFromPSR(ResponseEntry $entry): array
+     * @inheritdoc
+	 */
+    protected function contextFromPSR(ResponseInterface $response, ResponseEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromPSR($entry));
+        return $this->makeSafe(parent::contextFromPSR($response, $entry));
     }
 
     /**
-     * Extract context from a Laravel response.
-     *
-     * @param ResponseEntry $entry
-     * @return array
+	 * @inheritdoc
      */
-    protected function contextFromSymfony(ResponseEntry $entry): array
+    protected function contextFromSymfony(SymfonyResponse $response, ResponseEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromSymfony($entry));
+        return $this->makeSafe(parent::contextFromSymfony($response, $entry));
     }
 
     /**
-     * Extract context from the given response, using server variables.
-     *
-     * @param ResponseEntry $entry
-     * @return array
-     */
-    protected function contextFromString(ResponseEntry $entry): array
+     * @inheritdoc
+	 */
+    protected function contextFromString(string $response, ResponseEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromString($entry));
+        return $this->makeSafe(parent::contextFromString($response, $entry));
     }
 
     /**
-     * Ensures sensitive header values are replaced.
-     *
-     * @param array $context
-     * @return array
-     */
+     * @inheritdoc
+	 */
     protected function makeSafe(array $context): array
     {
         foreach ($this->headers as $header) {

@@ -4,6 +4,7 @@ namespace Garbetjie\RequestLogging\Http\Context;
 
 use Garbetjie\RequestLogging\Http\ResponseEntry;
 use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Client\Response as LaravelHttpClientResponse;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -37,16 +38,19 @@ class ResponseContext
     {
         switch (true) {
             case $entry->response() instanceof ResponseInterface:
-                return $this->contextFromPSR($entry);
+                return $this->contextFromPSR($entry->response(), $entry);
 
             case $entry->response() instanceof SymfonyResponse:
-                return $this->contextFromSymfony($entry);
+                return $this->contextFromSymfony($entry->response(), $entry);
 
             case $entry->response() instanceof PromiseInterface:
-                return $this->contextFromPromise($entry);
+                return $this->contextFromPromise($entry->response(), $entry);
+
+			case $entry->response() instanceof LaravelHttpClientResponse:
+				return $this->contextFromPSR($entry->response()->toPsrResponse(), $entry);
 
             case is_string($entry->response()):
-                return $this->contextFromString($entry);
+                return $this->contextFromString($entry->response(), $entry);
 
             default:
                 throw new InvalidArgumentException(
@@ -61,12 +65,13 @@ class ResponseContext
     /**
      * Extract context from the given response, using server variables.
      *
+	 * @param string $response
      * @param ResponseEntry $entry
+	 *
      * @return array
      */
-    protected function contextFromString(ResponseEntry $entry): array
+    protected function contextFromString(string $response, ResponseEntry $entry): array
     {
-        $response = $entry->response();
         $headers = [];
 
         foreach (headers_list() as $line) {
@@ -93,13 +98,13 @@ class ResponseContext
     /**
      * Extract context from a PSR-compliant response.
      *
+	 * @param ResponseInterface $response
      * @param ResponseEntry $entry
+	 *
      * @return array
      */
-    protected function contextFromPSR(ResponseEntry $entry): array
+    protected function contextFromPSR(ResponseInterface $response, ResponseEntry $entry): array
     {
-        $response = $entry->response();
-
         $body = $response->getBody();
         $body->rewind();
         $contents = base64_encode($body->read($this->maxBodyLength));
@@ -118,25 +123,29 @@ class ResponseContext
     /**
      * Extract context from a Guzzle promise.
      *
+	 * @param PromiseInterface $promise
      * @param ResponseEntry $entry
+	 *
      * @return array
      */
-    protected function contextFromPromise(ResponseEntry $entry): array
+    protected function contextFromPromise(PromiseInterface $promise, ResponseEntry $entry): array
     {
         return $this->contextFromPSR(
-            $entry->response()->wait(true)
+            $promise->wait(true),
+			$entry
         );
     }
 
     /**
      * Extract context from a Symfony response (includes Laravel).
      *
+	 * @param SymfonyResponse $response
      * @param ResponseEntry $entry
+	 *
      * @return array
      */
-    protected function contextFromSymfony(ResponseEntry $entry): array
+    protected function contextFromSymfony(SymfonyResponse $response, ResponseEntry $entry): array
     {
-        $response = $entry->response();
         $body = $response->getContent();
 
         return [
