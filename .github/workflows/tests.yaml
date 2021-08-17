@@ -4,7 +4,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        LARAVEL_VERSION: [6.0, 7.0, 8.0]
+        LARAVEL_VERSION: [7.0, 8.0]
         PHP_VERSION: [7.3, 7.4, 8.0]
     steps:
     - uses: actions/checkout@v2
