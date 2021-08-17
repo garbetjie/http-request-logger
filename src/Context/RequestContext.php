@@ -3,7 +3,6 @@
 namespace Garbetjie\RequestLogging\Http\Context;
 
 use Garbetjie\RequestLogging\Http\RequestEntry;
-use Illuminate\Http\Client\Request as LaravelHttpClientRequest;
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -40,17 +39,14 @@ class RequestContext
     {
         switch (true) {
             case $entry->request() instanceof SymfonyRequest:
-                return $this->contextFromSymfony($entry->request(), $entry);
+                return $this->contextFromSymfony($entry);
 
             case $entry->request() instanceof ServerRequestInterface:
             case $entry->request() instanceof RequestInterface:
-                return $this->contextFromPSR($entry->request(), $entry);
-
-			case $entry->request() instanceof LaravelHttpClientRequest:
-				return $this->contextFromPSR($entry->request()->toPsrRequest(), $entry);
+                return $this->contextFromPSR($entry);
 
             case is_string($entry->request()):
-                return $this->contextFromString($entry->request(), $entry);
+                return $this->contextFromString($entry);
 
             default:
                 throw new InvalidArgumentException(sprintf(
@@ -63,13 +59,12 @@ class RequestContext
     /**
      * Extract context from the given request, using server variables.
      *
-     * @param string $request
-	 * @param RequestEntry $entry
-	 *
+     * @param RequestEntry $entry
      * @return array
      */
-    protected function contextFromString(string $request, RequestEntry $entry): array
+    protected function contextFromString(RequestEntry $entry): array
     {
+        $request = $entry->request();
         $headers = [];
 
         foreach ($_SERVER as $key => $value) {
@@ -103,13 +98,13 @@ class RequestContext
     /**
      * Extract context from a PSR-compliant request.
      *
-     * @param RequestInterface $request
-	 * @param RequestEntry $entry
-	 *
+     * @param RequestEntry $entry
      * @return array
      */
-    protected function contextFromPSR(RequestInterface $request, RequestEntry $entry): array
+    protected function contextFromPSR(RequestEntry $entry): array
     {
+        $request = $entry->request();
+
         $body = $request->getBody();
         $body->rewind();
         $contents = base64_encode($body->read($this->maxBodyLength));
@@ -128,13 +123,12 @@ class RequestContext
     /**
      * Extract context from a Symfony request (includes Laravel).
      *
-     * @param SymfonyRequest $request
-	 * @param RequestEntry $entry
-	 *
+     * @param RequestEntry $entry
      * @return array
      */
-    protected function contextFromSymfony(SymfonyRequest $request, RequestEntry $entry): array
+    protected function contextFromSymfony(RequestEntry $entry): array
     {
+        $request = $entry->request();
         $content = $request->getContent();
 
         return [

@@ -3,8 +3,6 @@
 namespace Garbetjie\RequestLogging\Http\Context;
 
 use Garbetjie\RequestLogging\Http\RequestEntry;
-use Psr\Http\Message\RequestInterface;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class SafeRequestContext extends RequestContext
 {
@@ -14,25 +12,25 @@ class SafeRequestContext extends RequestContext
     /**
      * @inheritdoc
      */
-    protected function contextFromPSR(RequestInterface $request, RequestEntry $entry): array
+    protected function contextFromPSR(RequestEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromPSR($request, $entry));
+        return $this->makeSafe(parent::contextFromPSR($entry));
     }
 
     /**
      * @inheritdoc
      */
-    protected function contextFromSymfony(SymfonyRequest $request, RequestEntry $entry): array
+    protected function contextFromSymfony(RequestEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromSymfony($request, $entry));
+        return $this->makeSafe(parent::contextFromSymfony($entry));
     }
 
     /**
      * @inheritdoc
      */
-    protected function contextFromString(string $request, RequestEntry $entry): array
+    protected function contextFromString(RequestEntry $entry): array
     {
-        return $this->makeSafe(parent::contextFromString($request, $entry));
+        return $this->makeSafe(parent::contextFromString($entry));
     }
 
     /**
